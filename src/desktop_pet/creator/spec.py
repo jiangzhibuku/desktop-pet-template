@@ -203,7 +203,7 @@ class CharacterSpec:
     ultra_scale: float = 1.35
     extras: dict[str, Any] = field(default_factory=dict)
 
-    def normalized(self) -> "CharacterSpec":
+    def normalized(self) -> CharacterSpec:
         self.species = self.species if self.species in ALLOWED_SPECIES else "cat"
         self.accessory = (
             self.accessory if self.accessory in ALLOWED_ACCESSORIES else "none"
@@ -246,7 +246,7 @@ class CharacterSpec:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "CharacterSpec":
+    def from_dict(cls, data: dict[str, Any]) -> CharacterSpec:
         if not isinstance(data, dict):
             return cls()
         spec = cls(

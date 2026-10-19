@@ -52,7 +52,7 @@ class AppPaths:
     logs: Path
     screenshots: Path
 
-    def ensure(self) -> "AppPaths":
+    def ensure(self) -> AppPaths:
         for path in (
             self.data,
             self.characters,

@@ -12,7 +12,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
-from .cutout import DEFAULT_MODEL, prepare as prepare_cutout
+from .cutout import DEFAULT_MODEL
+from .cutout import prepare as prepare_cutout
 
 W, H = 256, 320
 SCALE = 3
