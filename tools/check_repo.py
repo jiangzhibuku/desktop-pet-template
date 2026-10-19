@@ -61,6 +61,7 @@ PERSONAL_FILES = {
 }
 REQUIRED_PATHS = [
     "README.md",
+    "项目说明.md",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
     "SECURITY.md",

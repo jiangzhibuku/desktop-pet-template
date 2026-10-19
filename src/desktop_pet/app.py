@@ -66,6 +66,7 @@ class DesktopPetApp(App):
         self._font_name = "Roboto"
         self._root: FloatLayout | None = None
         self._wizard = None
+        self._whitelist = None
 
         self.input_panel = InputPanel(
             on_submit=self.submit_text,
@@ -268,7 +269,7 @@ class DesktopPetApp(App):
             self.toggle_input()
         elif action == "manage":
             self._hide_menu()
-            self.input_panel.show_manager()
+            self.open_whitelist()
         elif action == "create":
             self._hide_menu()
             self.open_creator()
@@ -285,6 +286,16 @@ class DesktopPetApp(App):
             font_name=self._font_name,
         )
         self._wizard.open()
+
+    def open_whitelist(self) -> None:
+        from .whitelist_panel import WhitelistPopup
+
+        self._whitelist = WhitelistPopup(
+            agent=self.agent,
+            paths=self.paths,
+            font_name=self._font_name,
+        )
+        self._whitelist.open()
 
     def _on_character_created(self, key: str) -> None:
         try:

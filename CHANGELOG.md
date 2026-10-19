@@ -20,6 +20,8 @@
 - 旧动画兼容：`daiji/daiji1`、`khqn`、`tiaoyue`、`dazhao` 自动映射；`--link` 不复制大文件。
 - 可选 AI：LLM 解析描述、OpenAI 兼容 `/images/generations` 出图，失败自动回退。
 - 粉白弹窗背景 `assets/ui/popup_bg.png`，向导与现有气泡/轮盘风格一致。
+- 白名单管理从 Tk 灰黑窗口改为粉白卡片式 Kivy 面板（滚动列表、内置/自定义标记、计数）。
+- 新增 `项目说明.md`：定位、功能、架构、生成流程、安全/版权、亮点与 GitHub 文案。
 
 ### Changed
 

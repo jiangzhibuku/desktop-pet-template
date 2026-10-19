@@ -6,6 +6,9 @@
 
 ![默认角色](docs/preview.png)
 
+> 完整的项目介绍、技术方案和可直接使用的 GitHub 文案见
+> [`项目说明.md`](项目说明.md)。
+
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey)
 [![License: MIT](https://img.shields.io/badge/code-MIT-green)](LICENSE)
@@ -320,7 +323,8 @@ desktop-pet/
 │   ├── agent.py            # LLM 对话 + 23 个工具
 │   ├── characters.py       # 角色包加载
 │   ├── config.py           # 配置合并/保存
-│   ├── input_panel.py      # Tk 输入框/白名单
+│   ├── input_panel.py      # Tk 聊天输入框
+│   ├── whitelist_panel.py  # 粉白卡片式白名单
 │   ├── storage.py          # 原子 JSON
 │   ├── widgets.py          # 气泡/轮盘按钮
 │   ├── win32_window.py     # 透明/置顶/点击穿透
@@ -343,7 +347,8 @@ desktop-pet/
 ├── tests/                  # pytest
 ├── tools/                  # 占位素材生成器、仓库自检
 ├── run.py / run.bat        # 启动桌宠
-└── create_pet.py           # 生成角色（命令行）
+├── create_pet.py           # 生成角色（命令行）
+└── 项目说明.md             # 完整项目介绍 / GitHub 文案
 ```
 
 ## 开发与测试

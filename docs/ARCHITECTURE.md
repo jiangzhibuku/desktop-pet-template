@@ -10,7 +10,8 @@
 | `agent.py` | 与 OpenAI 兼容接口对话、工具调用、记忆/统计/日志 |
 | `characters.py` | 角色包发现、`character.json` 解析、帧排序与校验 |
 | `config.py` | 默认值 + JSON + 环境变量合并，字体解析 |
-| `input_panel.py` | 独立 Tk 线程：聊天输入框、白名单管理窗口 |
+| `input_panel.py` | 独立 Tk 线程：聊天输入框 |
+| `whitelist_panel.py` | 粉白卡片式白名单管理（Kivy） |
 | `storage.py` | 线程安全的原子 JSON 读写 |
 | `widgets.py` | 气泡、圆形轮盘按钮 |
 | `win32_window.py` | 全屏铺满桌面、透明色键、隐藏任务栏图标 |
