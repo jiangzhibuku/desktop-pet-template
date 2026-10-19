@@ -23,5 +23,9 @@
     "proactive_minutes": 30.0,
     "max_tool_rounds": 5,
     "history_limit": 30
+  },
+  "creator": {
+    "cutout": "auto",
+    "cutout_model": "isnet-anime"
   }
 }

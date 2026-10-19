@@ -65,12 +65,19 @@ class AgentConfig:
 
 
 @dataclass
+class CreatorConfig:
+    cutout: str = "auto"
+    cutout_model: str = "isnet-anime"
+
+
+@dataclass
 class Config:
     character: str = "mochi"
     font: str = ""
     api: ApiConfig = field(default_factory=ApiConfig)
     ui: UiConfig = field(default_factory=UiConfig)
     agent: AgentConfig = field(default_factory=AgentConfig)
+    creator: CreatorConfig = field(default_factory=CreatorConfig)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -98,6 +105,10 @@ class Config:
                 "proactive_minutes": self.agent.proactive_minutes,
                 "max_tool_rounds": self.agent.max_tool_rounds,
                 "history_limit": self.agent.history_limit,
+            },
+            "creator": {
+                "cutout": self.creator.cutout,
+                "cutout_model": self.creator.cutout_model,
             },
         }
 
@@ -176,6 +187,12 @@ def load_config(paths: AppPaths) -> Config:
     cfg.agent.max_tool_rounds = _as_int(agent.get("max_tool_rounds"), cfg.agent.max_tool_rounds)
     cfg.agent.history_limit = _as_int(agent.get("history_limit"), cfg.agent.history_limit)
 
+    creator = _as_dict(raw.get("creator"))
+    cfg.creator.cutout = str(creator.get("cutout") or cfg.creator.cutout).strip().lower()
+    cfg.creator.cutout_model = str(
+        creator.get("cutout_model") or cfg.creator.cutout_model
+    ).strip()
+
     # Environment overrides: convenient for CI, portable installs and secrets.
     if os.environ.get("DESKTOP_PET_API_KEY"):
         cfg.api.api_key = os.environ["DESKTOP_PET_API_KEY"].strip()
@@ -185,6 +202,10 @@ def load_config(paths: AppPaths) -> Config:
         cfg.api.model = os.environ["DESKTOP_PET_MODEL"].strip()
     if os.environ.get("DESKTOP_PET_CHARACTER"):
         cfg.character = os.environ["DESKTOP_PET_CHARACTER"].strip()
+    if os.environ.get("DESKTOP_PET_CUTOUT"):
+        cfg.creator.cutout = os.environ["DESKTOP_PET_CUTOUT"].strip().lower()
+    if os.environ.get("DESKTOP_PET_CUTOUT_MODEL"):
+        cfg.creator.cutout_model = os.environ["DESKTOP_PET_CUTOUT_MODEL"].strip()
 
     _clamp(cfg)
     return cfg
@@ -210,6 +231,10 @@ def _clamp(cfg: Config) -> None:
     cfg.agent.max_tool_rounds = min(12, max(1, cfg.agent.max_tool_rounds))
     cfg.agent.history_limit = min(200, max(4, cfg.agent.history_limit))
     cfg.api.timeout = min(120.0, max(5.0, cfg.api.timeout))
+    if cfg.creator.cutout not in {"auto", "rembg", "none"}:
+        cfg.creator.cutout = "auto"
+    if not cfg.creator.cutout_model:
+        cfg.creator.cutout_model = "isnet-anime"
 
 
 def resolve_font(cfg: Config, paths: AppPaths) -> Path | None:

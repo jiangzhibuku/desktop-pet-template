@@ -72,6 +72,7 @@ REQUIRED_PATHS = [
     "create_pet.py",
     "src/desktop_pet/__main__.py",
     "src/desktop_pet/agent.py",
+    "src/desktop_pet/creator/cutout.py",
     "assets/characters/mochi/character.json",
     "assets/ui/popup_bg.png",
     "assets/LICENSE",

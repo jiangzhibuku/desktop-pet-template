@@ -58,7 +58,12 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -U pip
 pip install -r requirements.txt
+
+# 可选：本地智能抠图（二次元角色效果好，首次约下载 170MB 模型）
+pip install "rembg>=2.0" onnxruntime
 ```
+
+> 不装 rembg 也能用：默认会用透明通道裁切/纯色背景泛洪；只是复杂背景效果有限。
 
 ### 2. 生成一个角色
 
@@ -162,7 +167,25 @@ python create_pet.py --name 小蓝 --image .\cat.png
 - 自动裁切透明边、脚底对齐、等比缩放。
 - 图片模式**直接使用你选的图**，不改画风；照片转动漫需要额外的图生图模型。
 - 用上下浮动、挤压/拉伸、轻微倾斜和阴影生成动作，不重绘你的角色。
-- 背景复杂时先用抠图工具处理成透明 PNG；`--tolerance` 可调。
+
+抠图方式：
+
+```powershell
+# 默认：透明图直接裁切；纯色底泛洪；必要时尝试本地 rembg
+python create_pet.py --name 小蓝 --image .\cat.png
+
+# 强制本地 rembg（需先安装，首次下载模型）
+python create_pet.py --name 小蓝 --image .\cat.png --cutout rembg
+
+# 保留原图背景（JPG 会带矩形底）
+python create_pet.py --name 小蓝 --image .\cat.png --keep-bg
+```
+
+- `--cutout auto`：透明通道 → 纯色泛洪 → 如果几乎没去掉背景且装了 rembg，再尝试 rembg。
+- `--cutout rembg`：使用 `isnet-anime` 本地模型，适合二次元/角色立绘；图片不出本机。
+- `--cutout none` / `--keep-bg`：不抠图，桌宠会是一张矩形卡片。
+- rembg 没安装、模型下载失败时自动回退泛洪，不会让生成失败。
+- `--tolerance` 只影响泛洪去背，默认 32。
 
 ### 已有动画帧
 
@@ -190,7 +213,7 @@ python create_pet.py --name 雪球 --prompt "..." --ai-spec --ai-image
 ```
 
 - `--ai-spec`：用对话模型把描述解析成角色 JSON；失败回退规则解析。
-- `--ai-image`：调用 OpenAI 兼容的 `/images/generations` 生成角色图，再去背 + 生成动作；失败回退离线绘制。
+- `--ai-image`：调用 OpenAI 兼容的 `/images/generations` 生成角色图，再抠图 + 生成动作；失败回退离线绘制。
 - 配置 `api.image_model`，默认 `cogview-3-flash`。
 - 需要 `api.api_key` 或 `DESKTOP_PET_API_KEY`。
 
@@ -207,7 +230,10 @@ AI 出图受服务商支持、费用和内容政策影响；本项目不保证�
 | `--link` | 配合 `--frames`，只引用不复制 |
 | `--ai-spec` | 用模型解析描述 |
 | `--ai-image` | 用图片模型出图 |
-| `--tolerance` | 去背景容差，默认 32 |
+| `--cutout` | `auto` / `rembg` / `none`，默认自动 |
+| `--cutout-model` | rembg 模型，默认 `isnet-anime` |
+| `--keep-bg` | 保留原图背景，等同 `--cutout none` |
+| `--tolerance` | 泛洪去背景容差，默认 32 |
 | `--author` / `--license` | 写入角色包元数据 |
 | `--overwrite` | 覆盖同名角色 |
 | `--no-use` | 生成后不切换当前角色 |
@@ -240,8 +266,10 @@ AI 出图受服务商支持、费用和内容政策影响；本项目不保证�
 | `agent.proactive_minutes` | `30` | 主动说话间隔，`0` 关闭 |
 | `agent.max_tool_rounds` | `5` | 工具连续调用上限 |
 | `agent.history_limit` | `30` | 上下文条数 |
+| `creator.cutout` | `"auto"` | `auto` / `rembg` / `none` |
+| `creator.cutout_model` | `"isnet-anime"` | 本地 rembg 模型 |
 
-环境变量：`DESKTOP_PET_API_KEY`、`DESKTOP_PET_BASE_URL`、`DESKTOP_PET_MODEL`、`DESKTOP_PET_CHARACTER`、`DESKTOP_PET_HOME`。
+环境变量：`DESKTOP_PET_API_KEY`、`DESKTOP_PET_BASE_URL`、`DESKTOP_PET_MODEL`、`DESKTOP_PET_CHARACTER`、`DESKTOP_PET_HOME`、`DESKTOP_PET_CUTOUT`、`DESKTOP_PET_CUTOUT_MODEL`。
 
 ## 操作方式
 
@@ -332,6 +360,7 @@ desktop-pet/
 │       ├── spec.py         # 角色规格 + 中英文解析
 │       ├── draw.py         # 离线程序化绘制
 │       ├── image_pack.py   # 图片 → 动作帧
+│       ├── cutout.py       # 透明/泛洪/本地 rembg 抠图
 │       ├── pack.py         # 写角色包/预览
 │       ├── pipeline.py     # 三种生成流程
 │       ├── ai.py           # 可选 AI 解析/出图
@@ -381,7 +410,10 @@ python tools/generate_placeholder.py
 A：离线绘制只支持有限的物种/颜色/配饰组合。要更自由，用透明 PNG，或开 `--ai-image`。
 
 **Q：JPG 去背景后还有白边？**
-A：复杂背景/发丝很难完美去除；建议先用抠图工具输出透明 PNG，或调低 `--tolerance`。
+A：复杂背景/发丝很难完美去除。装 `rembg` 后用 `--cutout rembg`；或先用抠图工具输出透明 PNG，或调低 `--tolerance`。
+
+**Q：rembg 第一次用很慢？**
+A：首次会下载约 170MB 的 `isnet-anime` 模型到用户缓存目录，之后本地推理不再联网。
 
 **Q：生成的 walk 不像真跑步？**
 A：单张图只能做变换动画；要真正的跑步帧，请提供多帧素材或使用 `--frames`。

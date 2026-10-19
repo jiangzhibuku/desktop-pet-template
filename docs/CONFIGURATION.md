@@ -1,4 +1,4 @@
-﻿# 配置说明
+# 配置说明
 
 ## 文件位置
 
@@ -64,6 +64,10 @@ python run.py
     "proactive_minutes": 30,
     "max_tool_rounds": 5,
     "history_limit": 30
+  },
+  "creator": {
+    "cutout": "auto",
+    "cutout_model": "isnet-anime"
   }
 }
 ```
@@ -120,6 +124,28 @@ python create_pet.py --list
 生成的配置写入 `%APPDATA%\DesktopPet\characters\<名字>\character.json`，并自动更新
 本文件的 `character` 字段。完整参数见 [`CREATOR.md`](CREATOR.md)。
 
+### `creator`
+
+角色生成器的默认抠图设置：
+
+| 字段 | 默认 | 说明 |
+| --- | --- | --- |
+| `cutout` | `"auto"` | `auto` / `rembg` / `none` |
+| `cutout_model` | `"isnet-anime"` | 本地 rembg 模型名 |
+
+`auto`：透明图按 alpha 裁切；纯色底泛洪；泛洪几乎没去掉背景且安装了
+rembg 时，再尝试本地模型。`none` 会保留原图背景（JPG 会带矩形底）。
+
+安装本地 rembg：
+
+```powershell
+# 二选一
+pip install "rembg>=2.0" onnxruntime
+pip install -e ".[cutout]"
+```
+
+首次使用会下载约 170MB 的 `isnet-anime` 模型；下载失败会自动回退泛洪。
+
 ### `ui`
 
 - `pet_height`：120–800。
@@ -146,6 +172,8 @@ python create_pet.py --list
 | `DESKTOP_PET_BASE_URL` | 接口根地址 |
 | `DESKTOP_PET_MODEL` | 对话模型 |
 | `DESKTOP_PET_CHARACTER` | 角色包名称 |
+| `DESKTOP_PET_CUTOUT` | 抠图模式：`auto` / `rembg` / `none` |
+| `DESKTOP_PET_CUTOUT_MODEL` | rembg 模型名 |
 
 PowerShell 临时设置：
 

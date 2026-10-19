@@ -105,6 +105,9 @@ def create_from_image(
     author: str = "unknown",
     license: str = "unverified",
     tolerance: int = 32,
+    cutout: str = "auto",
+    cutout_model: str = "isnet-anime",
+    notices: list[str] | None = None,
     overwrite: bool = False,
     make_default: bool = True,
 ) -> PackResult:
@@ -117,7 +120,13 @@ def create_from_image(
         author=author,
         license=license,
     ).normalized()
-    frames = frames_from_image(path, tolerance=tolerance)
+    frames = frames_from_image(
+        path,
+        tolerance=tolerance,
+        cutout=cutout,
+        cutout_model=cutout_model,
+        notices=notices,
+    )
     return save_pack(
         spec,
         frames,
@@ -136,6 +145,8 @@ def create_from_prompt(
     config: Config | None = None,
     use_ai_spec: bool = False,
     use_ai_image: bool = False,
+    cutout: str | None = None,
+    cutout_model: str | None = None,
     author: str = "unknown",
     license: str = "unverified",
     overwrite: bool = False,
@@ -158,7 +169,12 @@ def create_from_prompt(
         image_path = ai.generate_image(ai.image_prompt(spec), config, generated)
         if image_path is not None:
             try:
-                frames = frames_from_image(image_path)
+                frames = frames_from_image(
+                    image_path,
+                    cutout=cutout or config.creator.cutout,
+                    cutout_model=cutout_model or config.creator.cutout_model,
+                    notices=notices,
+                )
                 source = {
                     "type": "ai-image",
                     "prompt": prompt,

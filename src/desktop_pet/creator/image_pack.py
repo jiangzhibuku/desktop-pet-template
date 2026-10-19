@@ -12,6 +12,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
 
+from .cutout import DEFAULT_MODEL, prepare as prepare_cutout
+
 W, H = 256, 320
 SCALE = 3
 GROUND_Y = 300          # feet line in 256x320 coordinates
@@ -21,42 +23,21 @@ SHADOW = (92, 72, 82, 52)
 OUTLINE_GLOW = (255, 186, 214)
 
 
-def _corner_color(image: Image.Image) -> tuple[int, int, int, int]:
-    width, height = image.size
-    points = [
-        (0, 0),
-        (width - 1, 0),
-        (0, height - 1),
-        (width - 1, height - 1),
-    ]
-    pixels = [image.getpixel(point) for point in points]
-    # The most common corner is the most likely background colour.
-    return max(set(pixels), key=pixels.count)
-
-
-def prepare_image(path: str | Path, *, tolerance: int = 32) -> Image.Image:
-    """Load a character image, remove a connected flat background and trim.
-
-    Transparent PNGs are used as-is.  For JPG/opaque images the four corners
-    are flood-filled, which removes only the *connected* background and keeps
-    white areas inside the character.
-    """
-    image = Image.open(path).convert("RGBA")
-    alpha = image.getchannel("A")
-    if alpha.getextrema()[0] < 250:
-        bbox = alpha.getbbox()
-    else:
-        background = _corner_color(image)
-        width, height = image.size
-        for corner in ((0, 0), (width - 1, 0), (0, height - 1), (width - 1, height - 1)):
-            try:
-                ImageDraw.floodfill(image, corner, (0, 0, 0, 0), thresh=tolerance)
-            except Exception:
-                pass
-        bbox = image.getchannel("A").getbbox()
-
-    if bbox:
-        image = image.crop(bbox)
+def prepare_image(
+    path: str | Path,
+    *,
+    tolerance: int = 32,
+    cutout: str = "auto",
+    cutout_model: str = DEFAULT_MODEL,
+) -> Image.Image:
+    """Load an image and return its foreground (alpha-cropped)."""
+    result = prepare_cutout(
+        path,
+        mode=cutout,
+        tolerance=tolerance,
+        model=cutout_model,
+    )
+    image = result.image
     if image.width == 0 or image.height == 0:
         raise ValueError("图片里没有可用的角色像素")
     return image
@@ -170,9 +151,22 @@ def frames_from_image(
     path: str | Path,
     *,
     tolerance: int = 32,
+    cutout: str = "auto",
+    cutout_model: str = DEFAULT_MODEL,
+    notices: list[str] | None = None,
 ) -> dict[str, list[Image.Image]]:
     """Create the six animation sequences from one image."""
-    base = normalize(prepare_image(path, tolerance=tolerance))
+    result = prepare_cutout(
+        path,
+        mode=cutout,
+        tolerance=tolerance,
+        model=cutout_model,
+    )
+    if notices is not None:
+        notices.extend(result.notices)
+    if result.image.width == 0 or result.image.height == 0:
+        raise ValueError("图片里没有可用的角色像素")
+    base = normalize(result.image)
 
     idle: list[Image.Image] = []
     for index, bob in enumerate([0, -1, -2, -2, -1, 0, 0, 0, -1, -2]):

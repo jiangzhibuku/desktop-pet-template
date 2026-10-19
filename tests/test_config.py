@@ -20,6 +20,8 @@ def test_first_run_creates_config_without_key(tmp_path):
     assert cfg.api.api_key == ""
     assert cfg.api.configured is False
     assert cfg.character == "mochi"
+    assert cfg.creator.cutout == "auto"
+    assert cfg.creator.cutout_model == "isnet-anime"
 
 
 def test_env_overrides_file_and_defaults(tmp_path, monkeypatch):
@@ -54,6 +56,7 @@ def test_values_are_clamped(tmp_path):
             {
                 "ui": {"pet_height": 9999, "bubble_seconds": 0, "max_bubble_chars": 1},
                 "agent": {"max_tool_rounds": 99, "history_limit": 1},
+                "creator": {"cutout": "not-a-mode", "cutout_model": ""},
             }
         ),
         encoding="utf-8",
@@ -66,6 +69,8 @@ def test_values_are_clamped(tmp_path):
     assert cfg.ui.max_bubble_chars == 1
     assert cfg.agent.max_tool_rounds == 12
     assert cfg.agent.history_limit == 4
+    assert cfg.creator.cutout == "auto"
+    assert cfg.creator.cutout_model == "isnet-anime"
 
 
 def test_broken_json_falls_back_to_defaults(tmp_path):

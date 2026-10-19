@@ -4,6 +4,17 @@
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循
 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.1] - 2026-10-19
+
+### Added
+
+- 本地 `rembg` 智能抠图（默认 `isnet-anime`，适合二次元/角色立绘）。
+- `--cutout auto|rembg|none`、`--cutout-model`、`--keep-bg`。
+- 向导新增「抠图方式」下拉框：自动抠图 / 本地 rembg / 保留原图。
+- 自动回退链：透明通道 → 纯色泛洪 → 本地 rembg → 保留原图，失败不会中断。
+- `creator.cutout`、`creator.cutout_model` 配置项与环境变量。
+- 可选依赖 `pip install -e ".[cutout]"`（rembg + onnxruntime）。
+
 ## [0.3.0] - 2026-10-19
 
 桌宠生成模板。

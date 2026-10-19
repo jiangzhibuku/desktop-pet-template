@@ -1,4 +1,4 @@
-# 发布到 GitHub 检查清单
+﻿# 发布到 GitHub 检查清单
 
 这份文档按顺序执行，可以把当前目录安全地变成一个公开仓库。
 
@@ -117,12 +117,12 @@ git push -u origin main
 ```powershell
 pip install pyinstaller
 pyinstaller packaging/desktop_pet.spec
-Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.0-win64.zip
+Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.1-win64.zip
 ```
 
 在 GitHub → Releases → Draft a new release：
 
-- Tag：`v0.3.0`
+- Tag：`v0.3.1`
 - 附上 zip；
 - Release notes 里写明：**不含第三方角色素材；自带占位角色为 CC0**；
 - 提醒用户首次运行需要在 `%APPDATA%\DesktopPet\config.json` 填 API Key。
@@ -140,4 +140,5 @@ Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.0-win6
 2. 用 `git filter-repo` 或 BFG 清理历史；
 3. 强制推送后，联系 GitHub Support 清理缓存；
 4. 公开仓库的 fork 无法收回，所以**预防比补救重要**。
+
 

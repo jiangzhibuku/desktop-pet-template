@@ -73,12 +73,53 @@ PNG / JPG / JPEG / WebP。选中后会立即在弹窗里预览，并自动用文
 - 建议 512×512 以上，主体占画面 70% 左右。
 - 脚底尽量在同一水平线；生成时会自动脚底对齐。
 
-### 去背景
+### 抠图 / 去背景
 
-- 有透明通道：直接按 alpha 裁切。
-- JPG / 纯色背景：从四角做泛洪填充，只删除**与边缘连通**的背景，尽量保留角色内部的白色区域。
-- 不均匀背景、复杂阴影、发丝边缘：建议先用抠图工具处理成透明 PNG。
+有三种模式：
+
+| 模式 | 命令 | 行为 |
+| --- | --- | --- |
+| 自动 | `--cutout auto`（默认） | 透明图按 alpha 裁切；纯色底泛洪；几乎没去掉背景时，如果装了 rembg 再尝试本地模型 |
+| 本地智能 | `--cutout rembg` | 强制用 `rembg` 的 `isnet-anime` 模型，适合二次元/角色立绘 |
+| 保留原图 | `--cutout none` / `--keep-bg` | 不抠图；JPG 会带矩形背景，只适合透明图或特殊用途 |
+
+默认值写在 `%APPDATA%\DesktopPet\config.json`：
+
+```json
+{
+  "creator": {
+    "cutout": "auto",
+    "cutout_model": "isnet-anime"
+  }
+}
+```
+
+也可用环境变量 `DESKTOP_PET_CUTOUT`、`DESKTOP_PET_CUTOUT_MODEL` 临时覆盖。
+
+#### 本地 rembg（推荐）
+
+```powershell
+pip install "rembg>=2.0" onnxruntime
+python create_pet.py --name 小蓝 --image .\cat.png --cutout rembg
+```
+
+- 免费、离线，图片不出本机。
+- 首次使用会下载约 170MB 的 `isnet-anime` 模型，之后本地推理。
+- 默认模型适合动漫/角色图；也可 `--cutout-model u2net` 或 `birefnet-general`（模型名以 rembg 支持为准）。
+- 模型下载失败、rembg 未安装时自动回退到泛洪，不会中断生成。
+- 商业分发前请确认 rembg 及其模型各自的许可证。
+
+#### 纯色泛洪
+
+- JPG / 纯色背景：从四角泛洪，只删除**与边缘连通**的背景，尽量保留角色内部的白色区域。
 - `--tolerance` 可调（默认 32，范围 0–120）。白色猫配白底时，容差过高可能吃掉身体。
+- 复杂背景、阴影、发丝建议用 rembg 或透明 PNG。
+
+#### 保留背景
+
+- `--keep-bg` 适合“我就是想要一张矩形卡片”的场景。
+- 普通 JPG 不建议：桌宠会显示一个不透明的矩形底。
+- 已经是透明 PNG 的图，`none` 仍然会按 alpha 裁切透明边。
 
 ### 动作生成
 
@@ -214,6 +255,6 @@ dazhao/*.png
 
 - 离线绘制是风格化模板，不会按描述画出任意细节。
 - 单张图的 walk/jump 是变换动画，不是骨骼动画；想要真跑步需要多帧素材。
-- 去背景对复杂背景效果有限；建议透明 PNG。
+- 纯色泛洪对复杂背景效果有限；装 rembg 后可用 `--cutout rembg` 改善，或直接用透明 PNG。
 - AI 出图依赖服务商，可能失败、收费或产生不符合预期的图；失败会自动回退离线。
 

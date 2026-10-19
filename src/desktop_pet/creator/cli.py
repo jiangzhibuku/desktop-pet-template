@@ -38,6 +38,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--ai-spec", action="store_true", help="用大模型解析文字描述（可选）")
     parser.add_argument("--ai-image", action="store_true", help="用图片模型生成角色图（可选）")
     parser.add_argument("--link", action="store_true", help="配合 --frames：只引用原文件夹，不复制")
+    parser.add_argument(
+        "--cutout",
+        choices=["auto", "rembg", "none"],
+        default=None,
+        help="抠图方式：auto 自动 / rembg 本地智能 / none 保留背景",
+    )
+    parser.add_argument(
+        "--cutout-model",
+        default=None,
+        help="rembg 模型，默认 isnet-anime",
+    )
+    parser.add_argument("--keep-bg", action="store_true", help="保留原图背景，等同于 --cutout none")
     parser.add_argument("--tolerance", type=int, default=32, help="去背景容差，默认 32")
     parser.add_argument("--author", default="unknown", help="作者署名")
     parser.add_argument("--license", default="unverified", help="素材授权说明")
@@ -55,7 +67,10 @@ def main(argv: list[str] | None = None) -> int:
 
     args = build_parser().parse_args(argv)
     paths = build_paths()
+    config = load_config(paths)
     make_default = not args.no_use
+    cutout = "none" if args.keep_bg else (args.cutout or config.creator.cutout)
+    cutout_model = args.cutout_model or config.creator.cutout_model
 
     try:
         if args.list:
@@ -85,6 +100,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
 
         if args.image:
+            cutout_notices: list[str] = []
             result = create_from_image(
                 args.image,
                 args.name or Path(args.image).stem,
@@ -92,10 +108,13 @@ def main(argv: list[str] | None = None) -> int:
                 author=args.author,
                 license=args.license,
                 tolerance=max(0, min(120, args.tolerance)),
+                cutout=cutout,
+                cutout_model=cutout_model,
+                notices=cutout_notices,
                 overwrite=args.overwrite,
                 make_default=make_default,
             )
-            notices: list[str] = ["角色图：用户提供的图片"]
+            notices: list[str] = ["角色图：用户提供的图片", *cutout_notices]
         elif args.frames:
             result = import_frames(
                 args.frames,
@@ -109,7 +128,6 @@ def main(argv: list[str] | None = None) -> int:
             )
             notices = ["角色帧：导入已有文件夹" + ("（仅引用，不复制）" if args.link else "")]
         else:
-            config = load_config(paths)
             result, notices = create_from_prompt(
                 args.prompt or "",
                 args.name,
@@ -117,6 +135,8 @@ def main(argv: list[str] | None = None) -> int:
                 config=config,
                 use_ai_spec=args.ai_spec,
                 use_ai_image=args.ai_image,
+                cutout=cutout,
+                cutout_model=cutout_model,
                 author=args.author,
                 license=args.license,
                 overwrite=args.overwrite,

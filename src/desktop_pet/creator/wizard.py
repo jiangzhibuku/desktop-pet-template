@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import queue
 import threading
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
 from kivy.clock import Clock
 from kivy.graphics import Color, RoundedRectangle
@@ -19,6 +19,7 @@ from kivy.uix.checkbox import CheckBox
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
+from kivy.uix.spinner import Spinner
 from kivy.uix.textinput import TextInput
 
 from ..config import Config
@@ -147,7 +148,7 @@ class CreatePetWizard(Popup):
         self.prompt_box.add_widget(self.prompt_input)
         root.add_widget(self.prompt_box)
 
-        self.image_box = BoxLayout(orientation="vertical", spacing=4, size_hint_y=None, height=124)
+        self.image_box = BoxLayout(orientation="vertical", spacing=4, size_hint_y=None, height=158)
         self.image_box.add_widget(
             Label(
                 text="上传一张图片（PNG/JPG），自动去背景并生成动画",
@@ -174,12 +175,61 @@ class CreatePetWizard(Popup):
         pick_row.add_widget(self.path_label)
         pick_row.add_widget(choose)
         self.image_box.add_widget(pick_row)
+
+        cutout_row = BoxLayout(spacing=6, size_hint_y=None, height=30)
+        cutout_row.add_widget(
+            Label(
+                text="抠图方式",
+                font_name=font_name,
+                font_size=12,
+                color=(0.45, 0.38, 0.42, 1),
+                size_hint_x=None,
+                width=62,
+            )
+        )
+        default_cutout = {
+            "auto": "自动抠图",
+            "rembg": "本地 rembg",
+            "none": "保留原图",
+        }.get(self.settings.creator.cutout, "自动抠图")
+        self.cutout_spinner = Spinner(
+            text=default_cutout,
+            values=("自动抠图", "本地 rembg", "保留原图"),
+            font_name=font_name,
+            font_size=12,
+            size_hint=(None, 1),
+            width=136,
+            background_normal="",
+            background_down="",
+            background_color=(0.99, 0.93, 0.95, 1),
+            color=INK,
+        )
+        cutout_row.add_widget(self.cutout_spinner)
+        cutout_row.add_widget(
+            Label(
+                text="v",
+                font_name=font_name,
+                font_size=12,
+                color=INK,
+                size_hint_x=None,
+                width=12,
+            )
+        )
+        cutout_row.add_widget(
+            Label(
+                text="rembg 需安装；保留原图会带矩形底",
+                font_name=font_name,
+                font_size=10,
+                color=(0.58, 0.50, 0.54, 1),
+            )
+        )
+        self.image_box.add_widget(cutout_row)
         root.add_widget(self.image_box)
 
-        ai_row = BoxLayout(spacing=6, size_hint_y=None, height=34)
+        self.ai_row = BoxLayout(spacing=6, size_hint_y=None, height=34)
         self.ai_check = CheckBox(active=False, size_hint_x=None, width=34)
-        ai_row.add_widget(self.ai_check)
-        ai_row.add_widget(
+        self.ai_row.add_widget(self.ai_check)
+        self.ai_row.add_widget(
             Label(
                 text="AI 增强（用模型解析描述并出图；失败会自动回退离线）",
                 font_name=font_name,
@@ -187,7 +237,7 @@ class CreatePetWizard(Popup):
                 color=(0.45, 0.38, 0.42, 1),
             )
         )
-        root.add_widget(ai_row)
+        root.add_widget(self.ai_row)
 
         self.preview = Image(
             source=str(paths.assets / "icon.png"),
@@ -230,10 +280,13 @@ class CreatePetWizard(Popup):
         self.prompt_box.height = 124 if prompt else 0
         self.prompt_box.opacity = 1 if prompt else 0
         self.prompt_box.disabled = not prompt
-        self.image_box.height = 0 if prompt else 124
+        self.image_box.height = 0 if prompt else 158
         self.image_box.opacity = 0 if prompt else 1
         self.image_box.disabled = prompt
         self.ai_check.disabled = not prompt
+        self.ai_row.height = 34 if prompt else 0
+        self.ai_row.opacity = 1 if prompt else 0
+        self.ai_row.disabled = not prompt
         self.prompt_mode.background_color = SOFT if prompt else (0.92, 0.92, 0.94, 1)
         self.image_mode.background_color = (0.86, 0.90, 0.97, 1) if not prompt else (0.92, 0.92, 0.94, 1)
 
@@ -298,14 +351,23 @@ class CreatePetWizard(Popup):
 
     def _work_image(self, image_path: str, name: str | None) -> None:
         try:
+            cutout = {
+                "自动抠图": "auto",
+                "本地 rembg": "rembg",
+                "保留原图": "none",
+            }.get(self.cutout_spinner.text, "auto")
+            notices: list[str] = []
             result = create_from_image(
                 image_path,
                 name or Path(image_path).stem,
                 self.paths,
                 author="local user",
                 license="unverified",
+                cutout=cutout,
+                cutout_model=self.settings.creator.cutout_model,
+                notices=notices,
             )
-            self._queue.put(("ok", result, ["角色图：用户提供的图片"]))
+            self._queue.put(("ok", result, ["角色图：用户提供的图片", *notices]))
         except Exception as exc:
             self._queue.put(("error", str(exc), []))
 

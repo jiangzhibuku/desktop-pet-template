@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "desktop-pet"
-version = "0.3.0"
+version = "0.3.1"
 description = "A transparent Windows desktop pet with frame animations and an LLM agent."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.6"]
+cutout = ["rembg>=2.0", "onnxruntime>=1.17"]
 
 [project.scripts]
 desktop-pet = "desktop_pet.__main__:main"
