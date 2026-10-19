@@ -1,4 +1,4 @@
-﻿# 发布到 GitHub 检查清单
+# 发布到 GitHub 检查清单
 
 这份文档按顺序执行，可以把当前目录安全地变成一个公开仓库。
 
@@ -113,6 +113,25 @@ git push -u origin main
 - **Security**：开启 Dependabot alerts 和 private vulnerability reporting。
 
 ## 7. 发布 Release（可选）
+
+### 方式 A：自动构建（推荐）
+
+仓库已包含 `.github/workflows/release.yml`。推送 `v*` 标签即可自动：
+
+1. 安装依赖
+2. 跑测试
+3. PyInstaller 打包
+4. 生成 `DesktopPet-<tag>-win64.zip` + SHA256
+5. 创建 GitHub Release 并上传
+
+```powershell
+git tag v0.3.1
+git push origin v0.3.1
+```
+
+也可以在 GitHub → Actions → Release → Run workflow 手动构建。
+
+### 方式 B：本地手动打包
 
 ```powershell
 pip install pyinstaller

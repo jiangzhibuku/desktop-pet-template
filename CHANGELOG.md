@@ -14,6 +14,9 @@
 - 自动回退链：透明通道 → 纯色泛洪 → 本地 rembg → 保留原图，失败不会中断。
 - `creator.cutout`、`creator.cutout_model` 配置项与环境变量。
 - 可选依赖 `pip install -e ".[cutout]"`（rembg + onnxruntime）。
+- `install.ps1` / `install.bat` 一键安装：检查 Python、创建 `.venv`、安装依赖、可选 rembg。
+- `.github/workflows/release.yml`：推送 `v*` 标签自动构建 Windows 免安装 zip 并创建 Release。
+- `使用说明.md`：中文 + English 使用手册；README 增加一键安装/Release 入口。
 
 ## [0.3.0] - 2026-10-19
 

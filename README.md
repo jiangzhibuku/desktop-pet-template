@@ -51,7 +51,49 @@
 
 ## 快速开始
 
-### 1. 安装
+### 最快：一键安装
+
+确认已安装 Python 3.10–3.12，然后双击：
+
+```text
+install.bat
+```
+
+或：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+脚本会自动：
+
+- 检查 Python 版本
+- 创建 `.venv`
+- 升级 pip
+- 安装 Kivy / requests / Pillow / pywin32
+- 询问是否安装本地 rembg
+- 提示下一步命令
+
+常用参数：
+
+```powershell
+.\install.ps1 -WithRembg -Run    # 装 rembg 并直接启动
+.\install.ps1 -CheckOnly         # 只检查环境，不安装
+```
+
+如果还没装 Python，先安装 [Python 3.12](https://www.python.org/downloads/)，安装时勾选 **Add Python to PATH**。
+
+### 免安装版（发布 Release 后）
+
+到 GitHub 的 **Releases** 页面下载：
+
+```text
+DesktopPet-v0.3.1-win64.zip
+```
+
+解压后双击 `DesktopPet.exe`，不需要安装 Python。
+
+### 手动安装
 
 ```powershell
 git clone https://github.com/<your-name>/desktop-pet.git
@@ -380,7 +422,9 @@ desktop-pet/
 ├── tools/                  # 占位素材生成器、仓库自检
 ├── run.py / run.bat        # 启动桌宠
 ├── create_pet.py           # 生成角色（命令行）
-└── 项目说明.md             # 完整项目介绍 / GitHub 文案
+├── install.ps1 / install.bat # 一键安装
+├── 项目说明.md             # 完整项目介绍 / GitHub 文案
+└── 使用说明.md             # 中英文使用手册
 ```
 
 ## 开发与测试

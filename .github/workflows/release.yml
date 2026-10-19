@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows portable release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Compile and test
+        run: |
+          python -m compileall -q src tools tests create_pet.py
+          pip install pytest
+          python -m pytest -q
+
+      - name: Build executable
+        run: pyinstaller --noconfirm --clean packaging/desktop_pet.spec
+
+      - name: Verify build output
+        run: |
+          if (-not (Test-Path "dist/DesktopPet/DesktopPet.exe")) {
+            throw "DesktopPet.exe was not produced"
+          }
+          if (-not (Test-Path "dist/DesktopPet/_internal/assets/characters/mochi/character.json")) {
+            throw "Bundled assets are missing"
+          }
+          Get-ChildItem dist/DesktopPet | Select-Object Name, Length
+        shell: pwsh
+
+      - name: Package and checksum
+        run: |
+          $version = "${{ github.ref_name }}"
+          if ($version -notmatch '^v') { $version = "v0.3.1" }
+          $zip = "DesktopPet-$version-win64.zip"
+          Compress-Archive -Path "dist/DesktopPet/*" -DestinationPath $zip -Force
+          Get-FileHash $zip -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash)  $zip" } |
+            Set-Content -Path "DesktopPet-$version-sha256.txt" -Encoding ascii
+          Get-Item $zip | Select-Object Name, @{n = "MB"; e = { [math]::Round($_.Length / 1MB, 1) } }
+        shell: pwsh
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DesktopPet-windows
+          path: |
+            DesktopPet-*-win64.zip
+            DesktopPet-*-sha256.txt
+          if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            DesktopPet-*-win64.zip
+            DesktopPet-*-sha256.txt
+          generate_release_notes: true
+          body: |
+            ## 桌面宠物 · Windows 免安装版
+
+            下载 `DesktopPet-*-win64.zip`，解压后双击 `DesktopPet.exe`，不需要安装 Python。
+
+            - 系统：Windows 10 / 11
+            - 自带原创 CC0 占位角色 Mochi
+            - 聊天需要你自己的 API Key，填到 `%APPDATA%\DesktopPet\config.json`
+            - 未内置 rembg 智能抠图；复杂背景请使用源码版并安装 rembg
+            - 第三方角色/字体不包含在 Release 中
+
+            ## Desktop Pet · Windows portable build
+
+            Download the zip, extract it and run `DesktopPet.exe`. Python is not required.
+
+            - OS: Windows 10 / 11
+            - Includes the original CC0 placeholder character Mochi
+            - Chat requires your own API key in `%APPDATA%\DesktopPet\config.json`
+            - rembg is not bundled; use the source version for smart cutout
+            - No third-party character packs or fonts are included
