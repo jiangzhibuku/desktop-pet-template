@@ -22,6 +22,7 @@
 | `creator/pipeline.py` | 图片/文字/旧帧三种生成流程 |
 | `creator/ai.py` | 可选的 LLM 解析与图片生成 |
 | `creator/cli.py` | 命令行入口 |
+| `creator/native_dialog.py` | Windows 原生图片选择框（Tk 线程，不阻塞 Kivy） |
 | `creator/wizard.py` | 应用内 Kivy 创建向导 |
 
 ## 线程模型

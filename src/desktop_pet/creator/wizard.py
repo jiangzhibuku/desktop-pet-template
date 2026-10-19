@@ -16,7 +16,6 @@ from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox
-from kivy.uix.filechooser import FileChooserListView
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
@@ -24,6 +23,7 @@ from kivy.uix.textinput import TextInput
 
 from ..config import Config
 from ..paths import AppPaths
+from .native_dialog import pick_image
 from .pipeline import create_from_image, create_from_prompt
 
 PINK = (0.96, 0.58, 0.72, 1)
@@ -76,6 +76,7 @@ class CreatePetWizard(Popup):
         self.image_path: str | None = None
         self.result = None
         self._done = False
+        self._alive = True
         self._queue: queue.Queue = queue.Queue()
         self._poll_event = None
 
@@ -149,7 +150,7 @@ class CreatePetWizard(Popup):
         self.image_box = BoxLayout(orientation="vertical", spacing=4, size_hint_y=None, height=124)
         self.image_box.add_widget(
             Label(
-                text="推荐透明 PNG；JPG 会尝试去掉纯色背景",
+                text="上传一张图片（PNG/JPG），自动去背景并生成动画",
                 font_name=font_name,
                 font_size=13,
                 color=(0.45, 0.38, 0.42, 1),
@@ -159,7 +160,7 @@ class CreatePetWizard(Popup):
         )
         pick_row = BoxLayout(spacing=8, size_hint_y=None, height=44)
         self.path_label = Label(
-            text="还没有选择图片",
+            text="还没有上传图片",
             font_name=font_name,
             font_size=12,
             color=(0.45, 0.38, 0.42, 1),
@@ -167,7 +168,7 @@ class CreatePetWizard(Popup):
             halign="left",
             valign="middle",
         )
-        choose = _button("选择图片", (0.86, 0.90, 0.97, 1), height=40)
+        choose = _button("上传图片", (0.86, 0.90, 0.97, 1), height=40)
         choose.color = INK
         choose.bind(on_release=lambda _b: self._choose_image())
         pick_row.add_widget(self.path_label)
@@ -237,36 +238,33 @@ class CreatePetWizard(Popup):
         self.image_mode.background_color = (0.86, 0.90, 0.97, 1) if not prompt else (0.92, 0.92, 0.94, 1)
 
     def _choose_image(self) -> None:
-        content = BoxLayout(orientation="vertical", spacing=6, padding=8)
-        chooser = FileChooserListView(
-            path=str(Path.home()),
-            filters=["*.png", "*.jpg", "*.jpeg", "*.webp"],
-        )
-        content.add_widget(chooser)
-        row = BoxLayout(spacing=8, size_hint_y=None, height=42)
-        select = _button("使用这张", PINK, height=40)
-        cancel = _button("取消", (0.72, 0.72, 0.76, 1), height=40)
-        row.add_widget(select)
-        row.add_widget(cancel)
-        content.add_widget(row)
-        chooser_popup = Popup(
-            title="选择角色图片",
-            content=content,
-            size_hint=(0.9, 0.9),
-            auto_dismiss=False,
-        )
+        self.status.text = "正在打开文件选择框…"
+        pick_image(self._image_selected)
 
-        def do_select(_button) -> None:
-            if not chooser.selection:
-                return
-            self.image_path = chooser.selection[0]
-            self.path_label.text = Path(self.image_path).name
-            self._set_mode("image")
-            chooser_popup.dismiss()
+    def _image_selected(self, path: str) -> None:
+        if not self._alive:
+            return
+        if not path:
+            self.status.text = "已取消选择"
+            return
+        suffix = Path(path).suffix.lower()
+        if suffix not in {".png", ".jpg", ".jpeg", ".webp"}:
+            self.status.text = "请选择 PNG / JPG / JPEG / WebP 图片"
+            return
 
-        select.bind(on_release=do_select)
-        cancel.bind(on_release=lambda _b: chooser_popup.dismiss())
-        chooser_popup.open()
+        self.image_path = path
+        self.path_label.text = Path(path).name
+        if not self.name_input.text.strip():
+            self.name_input.text = (Path(path).stem.lstrip("._- ") or "我的桌宠")[:16]
+        try:
+            self.preview.source = path
+        except Exception:
+            pass
+        self._done = False
+        self.result = None
+        self.generate_btn.text = "生成并切换"
+        self._set_mode("image")
+        self.status.text = "已选择：{}，点「生成并切换」".format(Path(path).name)
 
     # -------------------------------------------------------------- generate
     def _on_generate(self) -> None:
@@ -360,6 +358,7 @@ class CreatePetWizard(Popup):
         return False
 
     def dismiss(self, *args, **kwargs):
+        self._alive = False
         if self._poll_event is not None:
             self._poll_event.cancel()
             self._poll_event = None

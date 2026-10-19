@@ -154,8 +154,10 @@ python create_pet.py --name 奶油 --prompt "一只奶油色小猫，戴蓝色�
 python create_pet.py --name 小蓝 --image .\cat.png
 ```
 
+- 向导里点「上传图片」会打开 Windows 原生文件选择框，选完立即预览。
 - 推荐透明 PNG；JPG 会从四角尝试去掉纯色背景。
 - 自动裁切透明边、脚底对齐、等比缩放。
+- 图片模式**直接使用你选的图**，不改画风；照片转动漫需要额外的图生图模型。
 - 用上下浮动、挤压/拉伸、轻微倾斜和阴影生成动作，不重绘你的角色。
 - 背景复杂时先用抠图工具处理成透明 PNG；`--tolerance` 可调。
 
@@ -329,6 +331,7 @@ desktop-pet/
 │       ├── pack.py         # 写角色包/预览
 │       ├── pipeline.py     # 三种生成流程
 │       ├── ai.py           # 可选 AI 解析/出图
+│       ├── native_dialog.py # Windows 原生选图
 │       ├── cli.py          # 命令行
 │       └── wizard.py       # 应用内向导
 ├── assets/

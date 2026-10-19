@@ -1,4 +1,4 @@
-﻿# 角色生成器（Creator）
+# 角色生成器（Creator）
 
 把一张图或一句话变成桌宠角色包。生成后的角色包与运行时完全解耦，放在
 `%APPDATA%\DesktopPet\characters`，不会进入 Git 仓库。
@@ -56,6 +56,16 @@ a black cat with green eyes and a red scarf named Midnight
 不支持的特征（翅膀、机械、复杂服装、特定动漫角色）需要走 AI 出图或直接提供图片。
 
 ## 图片输入
+
+### 应用内上传
+
+向导里点「上传图片」会打开 **Windows 原生文件选择框**，只过滤
+PNG / JPG / JPEG / WebP。选中后会立即在弹窗里预览，并自动用文件名填角色名。
+点「生成并切换」后才会去背景、生成动作和角色包。
+
+> 图片模式会**直接使用你选的图**作为角色，不改变画风。
+> 如果你想把真人照片转成 Q 版/动漫角色，需要额外的“图生图”模型；
+> 当前版本不保留照片人物身份。可以先用 AI/画师生成一张卡通立绘，再上传。
 
 ### 推荐格式
 
@@ -182,6 +192,7 @@ dazhao/*.png
 | `creator/pipeline.py` | 图片/文字/旧帧三种流程 |
 | `creator/ai.py` | 可选的 LLM 解析与图片生成 |
 | `creator/cli.py` | 命令行 |
+| `creator/native_dialog.py` | Windows 原生选图框 |
 | `creator/wizard.py` | 应用内 Kivy 向导 |
 
 ## 扩展
