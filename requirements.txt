@@ -1,0 +1,5 @@
+# Runtime dependencies (Python 3.10 - 3.12)
+kivy==2.3.1
+requests>=2.31,<3
+Pillow>=10,<12
+pywin32>=306; sys_platform == "win32"

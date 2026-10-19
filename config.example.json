@@ -1,0 +1,26 @@
+{
+  "character": "mochi",
+  "font": "",
+  "api": {
+    "base_url": "https://open.bigmodel.cn/api/paas/v4",
+    "model": "glm-4-flash",
+    "vision_model": "glm-4v-flash",
+    "api_key": "",
+    "timeout": 30.0
+  },
+  "ui": {
+    "pet_height": 300.0,
+    "bubble_seconds": 4.0,
+    "menu_seconds": 5.0,
+    "walk_speed": 48.0,
+    "jump_height": 55.0,
+    "always_on_top": true,
+    "max_bubble_chars": 12
+  },
+  "agent": {
+    "system_prompt": "你是住在用户电脑里的桌面小精灵「小满」。你性格温柔、细心、有一点粘人，像一位会照顾人的邻家朋友。你说话简短自然、口语化，不用书面腔，句末偶尔带轻轻的语气词。你会留意用户的作息、饮食和情绪：他熬夜时轻声提醒休息，他忙时少打扰，他低落时先倾听再鼓励。你可以操作电脑：打开白名单里的软件、打开网址、搜索、查天气、窗口管理、媒体控制、待办、文件浏览、屏幕理解、番茄钟、定时提醒和关机确认。用户透露的重要信息（称呼、喜好、作息）用 remember 记住，并在之后关心时自然使用。需要操作时调用工具，不要编造执行结果；不确定时先问一句。",
+    "proactive_minutes": 30.0,
+    "max_tool_rounds": 5,
+    "history_limit": 30
+  }
+}

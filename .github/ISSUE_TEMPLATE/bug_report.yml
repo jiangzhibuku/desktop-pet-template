@@ -1,0 +1,56 @@
+name: Bug report / Bug 反馈
+description: Something is broken or behaves unexpectedly.
+title: "[Bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈！请先搜索已有 Issue，并**不要**贴 API Key、完整日志或含个人信息的截图。
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么
+      description: 实际行为 vs 期望行为。
+      placeholder: 启动后宠物显示为黑底方块，期望是透明背景……
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 运行 python run.py
+        2. 右键宠物
+        3. 点击「大招」
+        4. ……
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 环境
+      description: Windows 版本 + Python 版本 + 是否使用打包版
+      placeholder: Windows 11 23H2 / Python 3.12.4 / 源码运行
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 终端输出 / 报错
+      description: 请先删除 API Key、用户名、路径中的隐私信息。
+      render: shell
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: 确认
+      options:
+        - label: 我已经搜索过已有 Issue
+          required: true
+        - label: 我确认内容中不含 API Key 或其他敏感信息
+          required: true

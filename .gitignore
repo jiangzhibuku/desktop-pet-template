@@ -1,0 +1,66 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.localdata/
+.testtmp/
+.offline/
+.testdeps/
+.kivy/
+.smoke*
+
+# ---------------------------------------------------------------------------
+# Secrets and per-user data (never commit these)
+# ---------------------------------------------------------------------------
+config.json
+.env
+.env.*
+memory.json
+todos.json
+stats.json
+whitelist.json
+operations.log
+pet_crash.log
+pet_debug.log
+*.log
+screenshots/
+screen_shot.png
+
+# ---------------------------------------------------------------------------
+# Third-party character packs / fonts.
+# Only the original placeholder character "mochi" is tracked.
+# ---------------------------------------------------------------------------
+assets/characters/*/
+!assets/characters/mochi/
+!assets/characters/mochi/**
+assets/fonts/*
+!assets/fonts/README.md
+
+# ---------------------------------------------------------------------------
+# OS / editors
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+
+# ---------------------------------------------------------------------------
+# PyInstaller
+# ---------------------------------------------------------------------------
+*.spec.bak
