@@ -1,4 +1,4 @@
-# 发布到 GitHub 检查清单
+﻿# 发布到 GitHub 检查清单
 
 这份文档按顺序执行，可以把当前目录安全地变成一个公开仓库。
 
@@ -90,17 +90,17 @@ git commit -m "feat: initial public release"
 用网页或 GitHub CLI：
 
 ```powershell
-gh repo create desktop-pet --public --source=. --remote=origin --push
+gh repo create desktop-pet-template --public --source=. --remote=origin --push
 ```
 
 没有 `gh` 的话：
 
-1. GitHub → New repository → 名字 `desktop-pet`；
+1. GitHub → New repository → 名字 `desktop-pet-template`；
 2. **不要**勾选 “Add a README / .gitignore / license”（本地已有）；
 3. 按页面提示：
 
 ```powershell
-git remote add origin https://github.com/<your-name>/desktop-pet.git
+git remote add origin https://github.com/jiangzhibuku/desktop-pet-template.git
 git push -u origin main
 ```
 
@@ -159,5 +159,6 @@ Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.1-win6
 2. 用 `git filter-repo` 或 BFG 清理历史；
 3. 强制推送后，联系 GitHub Support 清理缓存；
 4. 公开仓库的 fork 无法收回，所以**预防比补救重要**。
+
 
 

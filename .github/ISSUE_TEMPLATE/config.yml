@@ -1,8 +1,9 @@
-blank_issues_enabled: false
+﻿blank_issues_enabled: false
 contact_links:
   - name: 安全问题 / Security
-    url: https://github.com/YOUR_GITHUB_USER/desktop-pet/security/advisories/new
+    url: https://github.com/jiangzhibuku/desktop-pet-template/security/advisories/new
     about: 请私下报告漏洞，不要公开贴 API Key 或利用细节。
   - name: 素材版权 / Asset licensing
-    url: https://github.com/YOUR_GITHUB_USER/desktop-pet/blob/main/docs/ASSETS.md
+    url: https://github.com/jiangzhibuku/desktop-pet-template/blob/main/docs/ASSETS.md
     about: 提交第三方素材前，请先阅读授权检查清单。
+

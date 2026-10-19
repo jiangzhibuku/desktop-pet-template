@@ -1,4 +1,4 @@
-# Desktop Pet Template · 桌宠生成模板
+﻿# Desktop Pet Template · 桌宠生成模板
 
 把你的角色变成桌面宠物：**给一张图，或写一句话**，自动生成 idle / walk / jump / ultra 动画，并套用现有的透明桌宠、粉白气泡和圆形轮盘。
 
@@ -96,8 +96,8 @@ DesktopPet-v0.3.1-win64.zip
 ### 手动安装
 
 ```powershell
-git clone https://github.com/<your-name>/desktop-pet.git
-cd desktop-pet
+git clone https://github.com/jiangzhibuku/desktop-pet-template.git
+cd desktop-pet-template
 
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
@@ -484,4 +484,5 @@ A：代码 MIT；Mochi 和离线生成的示例素材 CC0；用户图片/第三�
 | Python 依赖 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
 
 如果这个模板帮到你，欢迎 Star ⭐ 或提交 Issue / PR。
+
 
