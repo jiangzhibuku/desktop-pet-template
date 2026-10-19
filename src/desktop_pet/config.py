@@ -36,6 +36,7 @@ class ApiConfig:
     base_url: str = DEFAULT_BASE_URL
     model: str = DEFAULT_MODEL
     vision_model: str = DEFAULT_VISION_MODEL
+    image_model: str = "cogview-3-flash"
     api_key: str = ""
     timeout: float = 30.0
 
@@ -79,6 +80,7 @@ class Config:
                 "base_url": self.api.base_url,
                 "model": self.api.model,
                 "vision_model": self.api.vision_model,
+                "image_model": self.api.image_model,
                 "api_key": self.api.api_key,
                 "timeout": self.api.timeout,
             },
@@ -152,6 +154,7 @@ def load_config(paths: AppPaths) -> Config:
     cfg.api.base_url = str(api.get("base_url") or cfg.api.base_url).strip()
     cfg.api.model = str(api.get("model") or cfg.api.model).strip()
     cfg.api.vision_model = str(api.get("vision_model") or cfg.api.vision_model).strip()
+    cfg.api.image_model = str(api.get("image_model") or cfg.api.image_model).strip()
     cfg.api.api_key = str(api.get("api_key") or "").strip()
     cfg.api.timeout = _as_float(api.get("timeout"), cfg.api.timeout)
 
@@ -185,6 +188,16 @@ def load_config(paths: AppPaths) -> Config:
 
     _clamp(cfg)
     return cfg
+
+
+def save_config(cfg: Config, paths: AppPaths) -> None:
+    """Write the editable settings back to the user data directory."""
+    paths.config.parent.mkdir(parents=True, exist_ok=True)
+    tmp = paths.config.with_name(paths.config.name + ".tmp")
+    with tmp.open("w", encoding="utf-8") as handle:
+        json.dump(cfg.to_dict(), handle, ensure_ascii=False, indent=2)
+        handle.write("\n")
+    os.replace(tmp, paths.config)
 
 
 def _clamp(cfg: Config) -> None:

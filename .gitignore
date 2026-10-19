@@ -22,6 +22,7 @@ htmlcov/
 .testdeps/
 .kivy/
 .smoke*
+.tmp*
 
 # ---------------------------------------------------------------------------
 # Secrets and per-user data (never commit these)

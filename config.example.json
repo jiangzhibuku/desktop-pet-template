@@ -5,6 +5,7 @@
     "base_url": "https://open.bigmodel.cn/api/paas/v4",
     "model": "glm-4-flash",
     "vision_model": "glm-4v-flash",
+    "image_model": "cogview-3-flash",
     "api_key": "",
     "timeout": 30.0
   },

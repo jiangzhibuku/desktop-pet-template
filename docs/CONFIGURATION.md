@@ -1,4 +1,4 @@
-# 配置说明
+﻿# 配置说明
 
 ## 文件位置
 
@@ -46,6 +46,7 @@ python run.py
     "base_url": "https://open.bigmodel.cn/api/paas/v4",
     "model": "glm-4-flash",
     "vision_model": "glm-4v-flash",
+    "image_model": "cogview-3-flash",
     "api_key": "",
     "timeout": 30
   },
@@ -101,6 +102,24 @@ python run.py
 
 > 本地模型不一定支持 function calling；不支持时模型只会聊天，不会调用桌面工具。
 
+### `api.image_model`
+
+只在角色生成器的 AI 出图模式使用（`--ai-image` 或向导里的「AI 增强」）。
+默认 `cogview-3-flash`，需要服务商支持 OpenAI 兼容的
+`POST /images/generations`。失败会自动回退离线绘制，不影响使用。
+
+## 角色生成器
+
+```powershell
+python create_pet.py --name 雪球 --prompt "白色小猫，戴红围巾"
+python create_pet.py --name 小蓝 --image .\cat.png
+python create_pet.py --name 旧角色 --frames D:\old\pet --link
+python create_pet.py --list
+```
+
+生成的配置写入 `%APPDATA%\DesktopPet\characters\<名字>\character.json`，并自动更新
+本文件的 `character` 字段。完整参数见 [`CREATOR.md`](CREATOR.md)。
+
 ### `ui`
 
 - `pet_height`：120–800。
@@ -148,3 +167,4 @@ python run.py
 - 不要把 Key 写进 README、Issue、截图或日志。
 - 如果 Key 曾经出现在公开仓库/聊天记录里，立刻去服务商后台**吊销并重建**。
 - 日志可能包含你让宠物打开的路径和搜索词，分享日志前先检查。
+

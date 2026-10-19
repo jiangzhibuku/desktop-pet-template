@@ -4,6 +4,29 @@
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循
 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0] - 2026-10-19
+
+桌宠生成模板。
+
+### Added
+
+- `desktop_pet.creator` 包：文字 / 图片 / 已有帧三种输入。
+- 中英文角色描述解析：物种、颜色、配饰、花纹、眼睛、名字。
+- 离线程序化绘制：猫、狗、兔、狐、熊、鸟、史莱姆；围巾、蝴蝶结、眼镜、帽子、耳机、小花；斑点、条纹、星星、爱心。
+- 图片转动作：去背景、裁切、脚底对齐、idle/walk/jump/ultra 变换动画。
+- 角色包写入：`character.json`、六套帧、`preview.png`、`preview.gif`、`SOURCE.txt`、`LICENSE.txt`。
+- 命令行：`--prompt`、`--image`、`--frames --link`、`--ai-spec`、`--ai-image`、`--list`、`--use`、`--preview`。
+- 应用内「创建」向导：文字/图片、AI 增强、预览、生成后热切换。
+- 旧动画兼容：`daiji/daiji1`、`khqn`、`tiaoyue`、`dazhao` 自动映射；`--link` 不复制大文件。
+- 可选 AI：LLM 解析描述、OpenAI 兼容 `/images/generations` 出图，失败自动回退。
+- 粉白弹窗背景 `assets/ui/popup_bg.png`，向导与现有气泡/轮盘风格一致。
+
+### Changed
+
+- README 重构为「桌宠生成模板」。
+- 配置新增 `api.image_model`。
+- 角色加载支持 `.gif` 单帧序列。
+
 ## [0.2.0] - 2026-10-19
 
 首个可公开发布的整理版本。

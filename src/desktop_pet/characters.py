@@ -15,7 +15,7 @@ from pathlib import Path
 
 from .paths import AppPaths
 
-IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
 
 # Animation names understood by the UI.  "idle2" and "idle3" are the extra
 # idle poses exposed by the radial menu.
@@ -167,7 +167,7 @@ def load_character(key: str, paths: AppPaths) -> Character:
 
     frame_size = DEFAULT_FRAME_SIZE
     declared = meta.get("frame_width"), meta.get("frame_height")
-    if all(isinstance(value, (int, float)) and value > 0 for value in declared):
+    if all(isinstance(value, int | float) and value > 0 for value in declared):
         frame_size = (int(declared[0]), int(declared[1]))
 
     fps = meta.get("fps", 12)

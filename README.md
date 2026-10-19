@@ -1,8 +1,10 @@
-# Desktop Pet · 桌面宠物
+# Desktop Pet Template · 桌宠生成模板
 
-一个跑在 Windows 桌面上的透明桌宠：会待机、散步、跳跃、放大招，也能通过大模型聊天，并在你确认后帮忙打开软件、查天气、管理待办、设置提醒。
+把你的角色变成桌面宠物：**给一张图，或写一句话**，自动生成 idle / walk / jump / ultra 动画，并套用现有的透明桌宠、粉白气泡和圆形轮盘。
 
-![Desktop Pet 预览](docs/preview.png)
+![生成示例](docs/creator-preview.png)
+
+![默认角色](docs/preview.png)
 
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey)
@@ -10,51 +12,40 @@
 [![Assets: CC0](https://img.shields.io/badge/placeholder%20art-CC0-green)](assets/LICENSE)
 
 > [!IMPORTANT]
-> **素材版权说明**
+> **素材版权**
 >
-> 本仓库**不包含**任何第三方人物动画、角色立绘或字体。早期本地版本里使用的
+> 仓库只自带原创占位角色 **Mochi**（CC0-1.0）。早期本地版本使用的
 > `daiji / dazhao / khqn / tiaoyue` 动画和 `ChillHuoFangSong` 字体来自第三方，
-> **版权不属于本项目，也不能用于商业用途**，因此已从发布版本中移除。
+> **不能随项目分发，也不能商用**，因此没有进入仓库。
 >
-> 仓库内置的「Mochi」是 `tools/generate_placeholder.py` 生成的**原创占位角色**，
-> 以 CC0-1.0 释出，可自由使用、修改，包括商用。想换成自己的角色，请看
-> [自定义角色](#自定义角色) 和 [`docs/ASSETS.md`](docs/ASSETS.md)。
+> 你用自己的图片或文字生成的角色，版权/授权由你负责；生成包里的
+> `SOURCE.txt` 和 `LICENSE.txt` 会提醒这一点。详见
+> [`docs/ASSETS.md`](docs/ASSETS.md)。
 
 ---
 
-## 目录
+## 这个模板能做什么
 
-- [功能](#功能)
-- [快速开始](#快速开始)
-- [配置](#配置)
-- [操作方式](#操作方式)
-- [自定义角色](#自定义角色)
-- [打包为 exe](#打包为-exe)
-- [项目结构](#项目结构)
-- [开发与测试](#开发与测试)
-- [安全与隐私](#安全与隐私)
-- [常见问题](#常见问题)
-- [许可证](#许可证)
+```text
+一张角色图 / 一句描述 / 一套旧动画
+        ↓
+角色生成器：去背景、统一尺寸、生成动作、写角色包
+        ↓
+现有桌宠运行时：透明窗口、气泡、轮盘、聊天、23 个桌面工具
+```
 
-## 功能
-
-- **透明桌宠窗口**：无边框、置顶、不占任务栏，鼠标可穿透透明区域。
-- **帧动画**：待机（3 套）、散步、跳跃、大招；帧率与尺寸由角色包定义。
-- **拖拽与互动**：左键拖拽，双击弹出聊天框，右键打开轮盘菜单，`Esc` 收起。
-- **大模型对话**：支持 OpenAI 兼容接口（默认智谱 `glm-4-flash`），带长期记忆与主动关心。
-- **桌面工具**（共 23 个）：打开白名单软件、打开网址、搜索、天气、系统信息、剪贴板、番茄钟、护眼提醒、定时提醒、待办、窗口切换/最小化、媒体控制、截屏理解、文件浏览/搜索、掷骰子、喂食/状态、锁屏/关机/重启（必须二次确认）。
-- **数据本地化**：配置、记忆、待办、统计、日志、截图全部放在 `%APPDATA%\DesktopPet`，不污染仓库。
-- **可替换角色**：角色包与代码分离，自带原创占位角色，开箱即用。
+- **三种输入**：文字描述、单张图片、已有动画帧文件夹。
+- **七种物种**：猫、狗、兔、狐、熊、鸟、史莱姆。
+- **配饰与花纹**：围巾、蝴蝶结、眼镜、帽子、耳机、小花；斑点、条纹、星星、爱心。
+- **离线优先**：不配置额外 API 也能生成；AI 解析/出图是可选增强。
+- **美化风格保留**：粉白气泡、圆角、厚描边、圆形轮盘、柔和阴影。
+- **生成即切换**：应用内向导生成后立即换角色，不用重启。
+- **旧素材兼容**：`--frames --link` 可以直接引用你原来的动画目录，不复制 100+ MB。
+- **聊天与工具不变**：23 个桌面工具、记忆、待办、番茄钟、截屏理解、关机确认都保留。
 
 ## 快速开始
 
-### 环境要求
-
-- Windows 10 / 11
-- Python 3.10 – 3.12（推荐 3.12）
-- 可选：一个大模型 API Key（没有 Key 也能运行，只是不能聊天）
-
-### 安装
+### 1. 安装
 
 ```powershell
 git clone https://github.com/<your-name>/desktop-pet.git
@@ -66,9 +57,45 @@ python -m pip install -U pip
 pip install -r requirements.txt
 ```
 
-### 配置 API Key（二选一）
+### 2. 生成一个角色
 
-第一次运行会自动生成 `%APPDATA%\DesktopPet\config.json`。把 Key 填进去：
+文字：
+
+```powershell
+python create_pet.py --name 雪球 --prompt "白色小猫，戴红围巾，蓝眼睛"
+```
+
+图片：
+
+```powershell
+python create_pet.py --name 小蓝 --image .\cat.png
+```
+
+旧动画（只引用，不复制）：
+
+```powershell
+python create_pet.py --name 旧角色 --frames D:\python---study\桌面宠物图片 --link
+```
+
+生成后会写入：
+
+```text
+%APPDATA%\DesktopPet\characters\<名字>\
+```
+
+并自动把 `config.json` 的 `character` 切到新角色。
+
+### 3. 运行
+
+```powershell
+python run.py
+```
+
+也可以双击 `run.bat`，或 `.\run.ps1`。
+
+### 4. 配置 API Key（想聊天才需要）
+
+首次运行会生成 `%APPDATA%\DesktopPet\config.json`：
 
 ```json
 {
@@ -78,119 +105,177 @@ pip install -r requirements.txt
 }
 ```
 
-或者用环境变量（推荐，不会写进任何文件）：
+或者：
 
 ```powershell
 $env:DESKTOP_PET_API_KEY = "你的 API Key"
-```
-
-### 运行
-
-```powershell
 python run.py
 ```
 
-也可以双击 `run.bat`，或：
+没有 Key 也能生成角色、显示动画、拖拽、右键菜单；只是不能聊天。
+
+## 应用内向导
+
+运行桌宠 → 右键 → **创建**：
+
+1. 填名字（可留空，会从描述里提取）。
+2. 选「用文字描述」或「用一张图片」。
+3. 可选「AI 增强」。
+4. 点「生成并切换」。
+
+生成在后台线程执行，不会卡住动画；完成后立即换角色，并显示预览。
+
+> 向导使用粉白卡片、圆角和现有的中文字体，和桌宠气泡/轮盘保持同一套视觉。
+
+## 三种输入怎么用
+
+### 文字描述
 
 ```powershell
-.\run.ps1
+python create_pet.py --name 奶油 --prompt "一只奶油色小猫，戴蓝色蝴蝶结，星星花纹"
 ```
 
-首次启动会在桌面左下角出现 Mochi，并弹出一句问候。没有配置 Key 时，宠物依然会动、会拖拽；聊天会提示你去配置。
+支持的关键词：
 
-> 默认接口是智谱 BigModel 的 OpenAI 兼容端点。换服务商时改
-> `api.base_url` 和 `api.model` 即可，只要接口兼容 `/chat/completions` 与
-> `tools`（function calling）。
+| 类别 | 示例 |
+| --- | --- |
+| 物种 | 猫、狗、兔、狐、熊、鸟、史莱姆 |
+| 颜色 | 白、黑、灰、银、橘、黄、金、粉、蓝、绿、紫、棕、红、奶油 |
+| 配饰 | 围巾、蝴蝶结、眼镜、帽子、耳机、小花 |
+| 花纹 | 花纹、条纹、星星、爱心 |
+| 眼睛 | 蓝眼睛 / green eyes |
+| 名字 | 叫雪球 / named Midnight |
+
+离线绘制是**程序化风格**，不是任意文生图；复杂设定（翅膀、机械、特定动漫角色）请用图片或 AI 出图。详见 [`docs/CREATOR.md`](docs/CREATOR.md)。
+
+### 单张图片
+
+```powershell
+python create_pet.py --name 小蓝 --image .\cat.png
+```
+
+- 推荐透明 PNG；JPG 会从四角尝试去掉纯色背景。
+- 自动裁切透明边、脚底对齐、等比缩放。
+- 用上下浮动、挤压/拉伸、轻微倾斜和阴影生成动作，不重绘你的角色。
+- 背景复杂时先用抠图工具处理成透明 PNG；`--tolerance` 可调。
+
+### 已有动画帧
+
+```powershell
+python create_pet.py --name 旧角色 --frames D:\old\pet --link
+```
+
+会自动识别：
+
+| 新名称 | 旧目录 |
+| --- | --- |
+| idle | `idle` / `daiji/daiji1` / `daiji1` |
+| idle2 | `idle2` / `daiji/daiji2` |
+| idle3 | `idle3` / `daiji/daiji3` |
+| walk | `walk` / `khqn` |
+| jump | `jump` / `tiaoyue` |
+| ultra | `ultra` / `dazhao` |
+
+`--link` 只写绝对路径，不复制文件，适合 100+ MB 的旧素材；去掉 `--link` 会复制成独立角色包。
+
+## AI 增强（可选）
+
+```powershell
+python create_pet.py --name 雪球 --prompt "..." --ai-spec --ai-image
+```
+
+- `--ai-spec`：用对话模型把描述解析成角色 JSON；失败回退规则解析。
+- `--ai-image`：调用 OpenAI 兼容的 `/images/generations` 生成角色图，再去背 + 生成动作；失败回退离线绘制。
+- 配置 `api.image_model`，默认 `cogview-3-flash`。
+- 需要 `api.api_key` 或 `DESKTOP_PET_API_KEY`。
+
+AI 出图受服务商支持、费用和内容政策影响；本项目不保证一定成功。
+
+## 命令行参考
+
+| 参数 | 说明 |
+| --- | --- |
+| `--name` | 角色名；文字模式可省略，会从描述提取 |
+| `--prompt` | 文字描述 |
+| `--image` | 单张角色图 |
+| `--frames` | 已有帧文件夹 |
+| `--link` | 配合 `--frames`，只引用不复制 |
+| `--ai-spec` | 用模型解析描述 |
+| `--ai-image` | 用图片模型出图 |
+| `--tolerance` | 去背景容差，默认 32 |
+| `--author` / `--license` | 写入角色包元数据 |
+| `--overwrite` | 覆盖同名角色 |
+| `--no-use` | 生成后不切换当前角色 |
+| `--open` | 生成后打开预览图 |
+| `--list` | 列出已安装角色 |
+| `--use NAME` | 切换当前角色 |
+| `--preview NAME` | 打开角色预览图 |
 
 ## 配置
 
-配置文件位置：
-
-```
-%APPDATA%\DesktopPet\config.json
-```
-
-可用 `DESKTOP_PET_HOME` 环境变量改到便携目录：
-
-```powershell
-$env:DESKTOP_PET_HOME = "D:\DesktopPetData"
-```
-
-完整示例见 [`config.example.json`](config.example.json)。
+配置文件：`%APPDATA%\DesktopPet\config.json`；完整示例见 [`config.example.json`](config.example.json)。
 
 | 字段 | 默认值 | 说明 |
 | --- | --- | --- |
-| `character` | `"mochi"` | 角色包名称，对应 `assets/characters/<名字>` 或用户目录下的同名文件夹 |
-| `font` | `""` | 自定义字体路径；留空则自动找 `assets/fonts` 或系统中文字体 |
-| `api.base_url` | 智谱端点 | OpenAI 兼容接口根地址 |
+| `character` | `"mochi"` | 当前角色包 |
+| `font` | `""` | 自定义中文字体路径 |
+| `api.base_url` | 智谱端点 | OpenAI 兼容接口 |
 | `api.model` | `"glm-4-flash"` | 对话模型 |
 | `api.vision_model` | `"glm-4v-flash"` | 截屏理解模型 |
-| `api.api_key` | `""` | API Key；也可用 `DESKTOP_PET_API_KEY` |
-| `api.timeout` | `30` | 请求超时（秒） |
-| `ui.pet_height` | `300` | 桌宠高度（像素），宽度按角色比例计算 |
-| `ui.walk_speed` | `48` | 散步速度（像素/秒） |
-| `ui.jump_height` | `55` | 跳跃高度（像素） |
-| `ui.bubble_seconds` | `4` | 气泡自动消失时间 |
-| `ui.menu_seconds` | `5` | 轮盘菜单自动收起时间 |
+| `api.image_model` | `"cogview-3-flash"` | 可选的图片模型 |
+| `api.api_key` | `""` | Key，也可用环境变量 |
+| `api.timeout` | `30` | 超时秒数 |
+| `ui.pet_height` | `300` | 桌宠高度 |
+| `ui.walk_speed` | `48` | 散步速度 |
+| `ui.jump_height` | `55` | 跳跃高度 |
+| `ui.bubble_seconds` | `4` | 气泡停留 |
+| `ui.menu_seconds` | `5` | 轮盘收起 |
 | `ui.max_bubble_chars` | `12` | 气泡每行字数 |
-| `ui.always_on_top` | `true` | 是否置顶 |
-| `agent.system_prompt` | 内置人设 | 想换性格/说话风格就改这里 |
-| `agent.proactive_minutes` | `30` | 主动说话的间隔，`0` 关闭 |
-| `agent.max_tool_rounds` | `5` | 单轮对话最多连续调用工具次数 |
-| `agent.history_limit` | `30` | 保留的上下文消息条数 |
+| `agent.system_prompt` | 内置人设 | 换性格/说话风格 |
+| `agent.proactive_minutes` | `30` | 主动说话间隔，`0` 关闭 |
+| `agent.max_tool_rounds` | `5` | 工具连续调用上限 |
+| `agent.history_limit` | `30` | 上下文条数 |
 
-环境变量优先级高于 `config.json`：
-
-| 环境变量 | 对应配置 |
-| --- | --- |
-| `DESKTOP_PET_API_KEY` | `api.api_key` |
-| `DESKTOP_PET_BASE_URL` | `api.base_url` |
-| `DESKTOP_PET_MODEL` | `api.model` |
-| `DESKTOP_PET_CHARACTER` | `character` |
-| `DESKTOP_PET_HOME` | 用户数据目录 |
-
-更多说明见 [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md)。
+环境变量：`DESKTOP_PET_API_KEY`、`DESKTOP_PET_BASE_URL`、`DESKTOP_PET_MODEL`、`DESKTOP_PET_CHARACTER`、`DESKTOP_PET_HOME`。
 
 ## 操作方式
 
 | 操作 | 效果 |
 | --- | --- |
-| 左键按住拖动 | 移动桌宠 |
-| 左键双击 | 打开聊天输入框 |
-| 右键单击桌宠 | 打开轮盘菜单（跳跃 / 散步 / 大招 / 聊天 / 待机2 / 扩展 / 退出） |
+| 左键拖动 | 移动桌宠 |
+| 左键双击 | 聊天输入框 |
+| 右键 | 轮盘：跳跃 / 散步 / 大招 / 聊天 / 待机2 / 创建 / 扩展 / 退出 |
 | `Esc` | 收起菜单和气泡 |
-| 轮盘「扩展」 | 管理允许打开的软件白名单 |
+| 轮盘「创建」 | 打开角色生成向导 |
+| 轮盘「扩展」 | 管理可打开软件白名单 |
 
-聊天框回车发送，`Esc` 取消。输入框和宠物之间会自动跟随位置。
-
-## 自定义角色
-
-角色包是一个文件夹 + 一串按顺序编号的透明 PNG：
+## 角色包格式
 
 ```text
-assets/characters/my_pet/
-├── character.json          # 可选，推荐
-├── idle/                   # 待机（必需）
-│   ├── idle_00.png
-│   └── idle_01.png ...
-├── idle2/                  # 第二套待机（可选，缺省复用 idle）
-├── idle3/                  # 第三套待机（可选）
-├── walk/                   # 散步
-├── jump/                   # 跳跃
-└── ultra/                  # 大招
+%APPDATA%\DesktopPet\characters\<名字>\
+├── character.json
+├── SOURCE.txt
+├── LICENSE.txt
+├── preview.png
+├── preview.gif
+├── idle/*.png
+├── idle2/*.png
+├── idle3/*.png
+├── walk/*.png
+├── jump/*.png
+└── ultra/*.png
 ```
 
 `character.json` 示例：
 
 ```json
 {
-  "name": "My Pet",
-  "author": "your-name",
-  "license": "CC0-1.0",
-  "frame_width": 256,
-  "frame_height": 320,
+  "name": "雪球",
+  "species": "cat",
   "fps": 12,
   "ultra_scale": 1.35,
+  "frame_width": 256,
+  "frame_height": 320,
   "animations": {
     "idle": "idle",
     "idle2": "idle2",
@@ -202,21 +287,17 @@ assets/characters/my_pet/
 }
 ```
 
-- 推荐 8–12 fps，角色朝右，脚底对齐画布底部。
-- 帧按文件名里的数字自然排序，所以 `frame_2.png` 会排在 `frame_10.png` 前面。
-- 不想改仓库时，把角色包放进 `%APPDATA%\DesktopPet\characters\my_pet\`，
-  再把 `config.json` 的 `character` 改成 `"my_pet"` 即可。
+也可以手动把角色包放进 `%APPDATA%\DesktopPet\characters\`，再把 `config.json` 的 `character` 改成目录名。
 
-**素材格式、命名、授权检查清单**见 [`docs/ASSETS.md`](docs/ASSETS.md)。
+## 美化风格
 
-### ⚠️ 关于商业使用
+生成的角色不会替换 UI，只替换精灵图：
 
-- 仓库自带的 Mochi 占位角色是 CC0，可商用。
-- 你自己找的动画/立绘/字体，能不能商用取决于**它的授权**，不是取决于这个项目。
-- 「网上免费下载」「别人分享的」「游戏拆包」「动漫角色同人图」通常**不能**商用，
-  很多甚至不允许再分发。把它们放进 `%APPDATA%\DesktopPet\characters` 本地使用，
-  不要提交到 GitHub。
-- 如果角色来自素材商店，请保留购买凭证并确认 license 是否允许随开源项目分发。
+- 气泡：白色填充、粉色描边、圆角、左侧小尾巴。
+- 轮盘：8 个粉色圆形按钮，围绕桌宠扇形展开。
+- 阴影：脚下柔和椭圆阴影，跳跃时缩小。
+- 预览卡：900×560 的粉蓝渐变 + 角色 + 名字。
+- 离线绘制沿用厚描边、奶油色、粉色腮红和点缀。
 
 ## 打包为 exe
 
@@ -225,42 +306,42 @@ pip install pyinstaller
 pyinstaller packaging/desktop_pet.spec
 ```
 
-产物在 `dist/DesktopPet/`，双击 `DesktopPet.exe` 即可。打包配置会把
-`assets/` 一起带进去；第三方角色包不要放进仓库，可以打包后手动复制到
-`dist/DesktopPet/_internal/assets/characters/`，或放到用户目录。
-
-> PyInstaller 产物可能被杀毒软件误报，这是常见现象；如需分发，建议签名或
-> 在 Release 里说明。
+产物在 `dist/DesktopPet/`。打包会带上 `assets/`（含默认 Mochi 和 UI 图），但**不会**带上用户目录里的生成角色；需要时手动复制到用户目录。
 
 ## 项目结构
 
 ```text
 desktop-pet/
 ├── src/desktop_pet/
-│   ├── __main__.py        # 入口、DPI、错误提示
-│   ├── app.py             # Kivy 主界面、菜单、拖拽、气泡调度
-│   ├── pet.py             # 帧动画与移动
-│   ├── agent.py           # LLM 对话与 23 个桌面工具
-│   ├── characters.py      # 角色包发现与校验
-│   ├── config.py          # 配置合并、环境变量、字体解析
-│   ├── input_panel.py     # Tk 输入框 / 白名单管理
-│   ├── storage.py         # 原子 JSON 存储
-│   ├── widgets.py         # 气泡、圆形菜单按钮
-│   ├── win32_window.py    # 透明 / 置顶 / 点击穿透
-│   └── paths.py           # 仓库目录 vs 用户数据目录
+│   ├── app.py              # 主界面、菜单、拖拽、气泡
+│   ├── pet.py              # 动画播放与移动
+│   ├── agent.py            # LLM 对话 + 23 个工具
+│   ├── characters.py       # 角色包加载
+│   ├── config.py           # 配置合并/保存
+│   ├── input_panel.py      # Tk 输入框/白名单
+│   ├── storage.py          # 原子 JSON
+│   ├── widgets.py          # 气泡/轮盘按钮
+│   ├── win32_window.py     # 透明/置顶/点击穿透
+│   └── creator/
+│       ├── spec.py         # 角色规格 + 中英文解析
+│       ├── draw.py         # 离线程序化绘制
+│       ├── image_pack.py   # 图片 → 动作帧
+│       ├── pack.py         # 写角色包/预览
+│       ├── pipeline.py     # 三种生成流程
+│       ├── ai.py           # 可选 AI 解析/出图
+│       ├── cli.py          # 命令行
+│       └── wizard.py       # 应用内向导
 ├── assets/
-│   ├── characters/mochi/  # 原创占位角色（CC0）
-│   ├── fonts/             # 不放字体，只放说明
-│   └── icon.ico
-├── docs/                  # 预览图、素材/配置/架构/发布文档
-├── packaging/             # PyInstaller spec
-├── tests/                 # pytest 单元测试
-├── tools/                 # 占位素材生成器、仓库自检
-├── run.py / run.bat       # 源码运行
-└── pyproject.toml
+│   ├── characters/mochi/   # 原创 CC0 占位角色
+│   ├── ui/popup_bg.png     # 粉白弹窗背景
+│   └── fonts/              # 只放说明，不打包字体
+├── docs/                   # 预览、素材、配置、架构、发布
+├── packaging/              # PyInstaller spec
+├── tests/                  # pytest
+├── tools/                  # 占位素材生成器、仓库自检
+├── run.py / run.bat        # 启动桌宠
+└── create_pet.py           # 生成角色（命令行）
 ```
-
-更细的模块与线程说明见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)。
 
 ## 开发与测试
 
@@ -269,57 +350,51 @@ pip install -r requirements-dev.txt
 
 python -m pytest -q
 ruff check .
-python tools/check_repo.py          # 检查大文件、疑似密钥、素材目录
-python tools/generate_placeholder.py  # 重新生成占位角色与预览图
+python tools/check_repo.py
+python tools/generate_placeholder.py
 ```
 
-- 代码风格：Ruff（`E/F/W/I/B/UP`），行宽 100。
-- 提交前请跑一遍测试和 `check_repo.py`。
-- 素材相关的 PR 请附上授权说明，详见 [`docs/ASSETS.md`](docs/ASSETS.md)。
-- 贡献流程见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
+- 代码风格 Ruff（`E/F/W/I/B/UP`），行宽 100。
+- 新增物种/配饰/花纹的步骤见 [`docs/CREATOR.md`](docs/CREATOR.md)。
+- 发布前检查清单见 [`docs/PUBLISHING.md`](docs/PUBLISHING.md)。
 
 ## 安全与隐私
 
-- **API Key 不会进入仓库**：只从 `%APPDATA%\DesktopPet\config.json` 或环境变量读取。
-- **工具最小化授权**：打开软件只允许白名单；关机/重启/锁屏必须弹窗确认；
-  网址只允许 `http/https`。
-- **提示词注入风险**：模型可能被屏幕内容或网页诱导调用工具。请只配置可信的
-  模型服务，定期查看 `%APPDATA%\DesktopPet\logs\operations.log`，并保持白名单精简。
-- **截图会发送给视觉模型**：使用 `screenshot` 工具时，整屏截图会以 base64 发送到
-  你配置的 API；截图同时保存在本地 `screenshots/`。介意的话不要使用该工具。
-- 详细安全策略与漏洞上报方式见 [`SECURITY.md`](SECURITY.md)。
+- **API Key 不进仓库**：只从用户目录或环境变量读取。
+- **工具权限**：打开软件只允许白名单；关机/重启/锁屏必须确认；网址仅 http/https。
+- **提示词注入**：模型可能被屏幕/网页诱导调用工具；保持白名单精简，定期看 `%APPDATA%\DesktopPet\logs\operations.log`。
+- **截屏**：`screenshot` 会把整屏截图发送到你配置的视觉模型。
+- **AI 生成**：`--ai-spec` 会把描述发给对话模型；`--ai-image` 会把提示词发给图片模型并下载结果。
+- 详细策略见 [`SECURITY.md`](SECURITY.md)。
 
 ## 常见问题
 
-**Q：启动后看不到宠物？**
-A：先看终端报错。确认 Python 3.10+、Kivy 2.3.1 安装成功；双屏/高 DPI 下可先把
-`ui.pet_height` 调小。透明窗口需要 Windows 10/11 的桌面合成。
+**Q：一句话能生成任意角色吗？**
+A：离线绘制只支持有限的物种/颜色/配饰组合。要更自由，用透明 PNG，或开 `--ai-image`。
 
-**Q：宠物是黑底方块？**
-A：说明透明/色键没有生效，常见于远程桌面、部分虚拟机或禁用 DWM 的环境。
+**Q：JPG 去背景后还有白边？**
+A：复杂背景/发丝很难完美去除；建议先用抠图工具输出透明 PNG，或调低 `--tolerance`。
 
-**Q：聊天提示没有 API Key？**
-A：编辑 `%APPDATA%\DesktopPet\config.json` 的 `api.api_key`，或设置
-`DESKTOP_PET_API_KEY` 后重启。
+**Q：生成的 walk 不像真跑步？**
+A：单张图只能做变换动画；要真正的跑步帧，请提供多帧素材或使用 `--frames`。
 
-**Q：输入框不出现？**
-A：输入框是独立的 Tk 窗口，可能被其他置顶窗口挡住；按 `Esc` 再双击重试。
-远程桌面/多屏缩放异常时可先用轮盘里的「聊天」按钮。
+**Q：原来的动画怎么办？**
+A：`python create_pet.py --name 旧角色 --frames D:\...\桌面宠物图片 --link`，只引用不复制。
 
-**Q：能换成自己的 Live2D / GIF 吗？**
-A：当前播放的是 PNG 序列帧，GIF 可以用 ffmpeg 拆帧后放入对应文件夹。
-Live2D 需要额外的渲染后端，暂未内置。
+**Q：没有 API Key 能用吗？**
+A：能。生成、动画、拖拽、菜单都可用；聊天和 AI 增强不可用。
 
 **Q：可以商用吗？**
-A：代码 MIT 可商用；占位角色 CC0 可商用；**第三方素材请自行确认授权**。
+A：代码 MIT；Mochi 和离线生成的示例素材 CC0；用户图片/第三方素材/AI 出图需自行确认授权。
 
 ## 许可证
 
 | 内容 | 许可证 |
 | --- | --- |
 | 源代码 | [MIT](LICENSE) |
-| 原创占位角色、图标、预览图 | [CC0-1.0](assets/LICENSE) |
-| 第三方角色包 / 字体 | 不包含；遵循各自许可证 |
-| Python 依赖 | 见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
+| 占位角色、图标、预览图 | [CC0-1.0](assets/LICENSE) |
+| 用户生成/导入的角色 | 用户自行确认 |
+| Python 依赖 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
 
-如果这个项目帮到你，欢迎 Star ⭐ 或提交 Issue / PR。
+如果这个模板帮到你，欢迎 Star ⭐ 或提交 Issue / PR。
+

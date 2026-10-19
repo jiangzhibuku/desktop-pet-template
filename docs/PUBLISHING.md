@@ -106,8 +106,8 @@ git push -u origin main
 
 ## 6. 仓库设置建议
 
-- **Description**：`A transparent Windows desktop pet with frame animations and an LLM agent.`
-- **Topics**：`desktop-pet`, `kivy`, `python`, `windows`, `llm`, `ai-agent`, `desktop-companion`
+- **Description**：`A desktop pet template: turn an image or a sentence into an animated desktop pet.`
+- **Topics**：`desktop-pet`, `desktop-pet-template`, `character-generator`, `kivy`, `python`, `windows`, `llm`, `ai-agent`, `desktop-companion`
 - **Website**：可以先留空。
 - **Features**：Issues 打开；Discussions 可选。
 - **Security**：开启 Dependabot alerts 和 private vulnerability reporting。
@@ -117,12 +117,12 @@ git push -u origin main
 ```powershell
 pip install pyinstaller
 pyinstaller packaging/desktop_pet.spec
-Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.2.0-win64.zip
+Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.0-win64.zip
 ```
 
 在 GitHub → Releases → Draft a new release：
 
-- Tag：`v0.2.0`
+- Tag：`v0.3.0`
 - 附上 zip；
 - Release notes 里写明：**不含第三方角色素材；自带占位角色为 CC0**；
 - 提醒用户首次运行需要在 `%APPDATA%\DesktopPet\config.json` 填 API Key。
@@ -140,3 +140,4 @@ Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.2.0-win6
 2. 用 `git filter-repo` 或 BFG 清理历史；
 3. 强制推送后，联系 GitHub Support 清理缓存；
 4. 公开仓库的 fork 无法收回，所以**预防比补救重要**。
+

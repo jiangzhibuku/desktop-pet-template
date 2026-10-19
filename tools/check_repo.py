@@ -28,6 +28,11 @@ EXCLUDED_DIRS = {
     ".pytest_cache",
     ".ruff_cache",
     ".mypy_cache",
+    ".localdata",
+    ".testtmp",
+    ".offline",
+    ".testdeps",
+    ".kivy",
 }
 TEXT_EXTENSIONS = {
     ".py",
@@ -63,11 +68,14 @@ REQUIRED_PATHS = [
     "pyproject.toml",
     "requirements.txt",
     "run.py",
+    "create_pet.py",
     "src/desktop_pet/__main__.py",
     "src/desktop_pet/agent.py",
     "assets/characters/mochi/character.json",
+    "assets/ui/popup_bg.png",
     "assets/LICENSE",
     "docs/ASSETS.md",
+    "docs/CREATOR.md",
 ]
 FORBIDDEN_ASSET_DIRS = {"daiji", "dazhao", "khqn", "tiaoyue", "ziti"}
 

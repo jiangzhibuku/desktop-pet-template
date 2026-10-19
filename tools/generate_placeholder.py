@@ -416,6 +416,23 @@ def build_preview() -> None:
     )
 
 
+def build_ui_asset() -> None:
+    ui_dir = ASSETS_DIR / "ui"
+    ui_dir.mkdir(parents=True, exist_ok=True)
+    size = 64
+    scale = 4
+    image = Image.new("RGBA", (size * scale, size * scale), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
+    draw.rounded_rectangle(
+        [0, 0, size * scale - 1, size * scale - 1],
+        radius=14 * scale,
+        fill=(255, 249, 251, 255),
+        outline=(248, 196, 211, 255),
+        width=2 * scale,
+    )
+    image.resize((size, size), Image.LANCZOS).save(ui_dir / "popup_bg.png", optimize=True)
+
+
 def build_icon() -> None:
     face = cat_layer()
     small = face.resize((W, H), Image.LANCZOS).crop((36, 60, 220, 244)).resize(
@@ -455,6 +472,7 @@ def main() -> None:
     )
     build_preview()
     build_icon()
+    build_ui_asset()
     total = sum(counts.values())
     print(f"Generated {total} frames in {len(counts)} animations -> {CHAR_DIR}")
     print(f"Preview -> {DOCS_DIR / 'preview.png'}")

@@ -1,4 +1,4 @@
-# 角色素材指南（格式、替换与版权）
+﻿# 角色素材指南（格式、替换与版权）
 
 本项目的代码和素材是分开的：代码用 MIT，内置占位角色用 CC0，但**你后来加进去的
 角色包不自动获得任何授权**。这份文档说明格式怎么放、授权怎么判断。
@@ -9,7 +9,9 @@
 | --- | --- | --- |
 | `assets/characters/mochi/` | `tools/generate_placeholder.py` 生成的原创小猫，60 帧 | CC0-1.0 |
 | `assets/icon.png` / `icon.ico` | 由同一脚本生成 | CC0-1.0 |
+| `assets/ui/popup_bg.png` | 生成向导的粉白弹窗背景 | CC0-1.0 |
 | `docs/preview.png` / `preview.gif` | 由同一脚本生成 | CC0-1.0 |
+| `docs/creator-preview.png` / `.gif` | 生成器示例角色「奶油」 | CC0-1.0 |
 | `assets/fonts/` | 只有说明文件，不含字体 | — |
 
 早期本地版本使用过 `daiji/`、`dazhao/`、`khqn/`、`tiaoyue/` 动画和
@@ -161,6 +163,24 @@ Changes: resized to 256x320, renamed frames
 - 换电脑时只需复制用户目录；
 - 仓库始终只保留可公开的 CC0 占位角色。
 
+### 生成器产出的角色包
+
+`python create_pet.py` 或应用内「创建」会生成：
+
+```text
+%APPDATA%\DesktopPet\characters\<名字>\
+├── character.json
+├── SOURCE.txt      # 来源：prompt / 图片路径 / AI 模型
+├── LICENSE.txt     # 默认 unverified
+├── preview.png
+└── idle/ walk/ jump/ ultra/ ...
+```
+
+- **离线程序化绘制**：图形由本项目脚本生成，可按 CC0 使用；但如果你描述的是某个受版权保护的角色，角色本身的版权仍可能限制商用。
+- **用户图片**：版权归原权利人；`SOURCE.txt` 会记录图片路径，`LICENSE.txt` 默认 `unverified`。
+- **AI 出图**：受图片服务商的条款约束，商用前确认服务商是否授予商用权。
+- 发布/出售前，把 `LICENSE.txt` 改成真实授权，并保留来源证据。
+
 ## 7. 字体
 
 - 程序优先使用 `config.json` 的 `font` 路径；
@@ -180,3 +200,4 @@ Changes: resized to 256x320, renamed frames
 - 仓库中具体文件路径。
 
 我们会尽快删除相关内容。
+

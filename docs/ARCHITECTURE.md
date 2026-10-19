@@ -15,6 +15,14 @@
 | `widgets.py` | 气泡、圆形轮盘按钮 |
 | `win32_window.py` | 全屏铺满桌面、透明色键、隐藏任务栏图标 |
 | `paths.py` | 仓库资源目录 vs 用户数据目录 |
+| `creator/spec.py` | 角色规格 + 中英文关键词解析 |
+| `creator/draw.py` | 离线程序化绘制物种/配饰/花纹/动作 |
+| `creator/image_pack.py` | 图片去背、裁切、变换动作 |
+| `creator/pack.py` | 写角色包、预览、来源/授权文件 |
+| `creator/pipeline.py` | 图片/文字/旧帧三种生成流程 |
+| `creator/ai.py` | 可选的 LLM 解析与图片生成 |
+| `creator/cli.py` | 命令行入口 |
+| `creator/wizard.py` | 应用内 Kivy 创建向导 |
 
 ## 线程模型
 
@@ -61,6 +69,30 @@
 
 - 远程桌面、禁用 DWM 的虚拟机里可能变成黑底；
 - 某些录屏/截图工具对分层窗口支持不好。
+
+## 角色生成流程
+
+```text
+prompt ──► spec.parse_prompt ──► CharacterSpec ──► draw.build_frames ──┐
+   │              │（可选 ai.spec_from_prompt）                        │
+   │              └──────────────► ai.generate_image ──► image_pack ──┤
+image ──────────────────────────► image_pack ─────────────────────────┤
+frames ─────────────────────────► pipeline.import_frames ─────────────┤
+                                                                       ▼
+                                                          pack.save_pack
+                                                                       │
+                                      %APPDATA%/DesktopPet/characters/<key>
+                                                                       │
+                                                          config.character
+                                                                       │
+                                                    app.reload_character()
+```
+
+- 生成器只依赖 Pillow + requests，不导入 Kivy；命令行可在无 GUI 环境运行。
+- 向导在 worker 线程调用 `pipeline`，通过 `queue.Queue` 把结果交回 Kivy 主线程。
+- `reload_character` 停止旧 `PetWidget` 的 Clock、移除旧 widget、创建新 widget，
+  并写回 `config.json`；不需要重启应用。
+- 生成的角色包与仓库分离，避免把用户素材/第三方素材提交到 Git。
 
 ## 数据与安全边界
 

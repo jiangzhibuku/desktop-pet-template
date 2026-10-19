@@ -19,7 +19,7 @@ from kivy.uix.popup import Popup
 
 from .agent import Agent
 from .characters import load_character
-from .config import load_config, resolve_font
+from .config import load_config, resolve_font, save_config
 from .input_panel import InputPanel
 from .paths import build_paths
 from .pet import PetWidget
@@ -28,11 +28,12 @@ from .win32_window import setup_desktop_window
 
 MENU_ITEMS = [
     ("跳跃", "jump", 90),
-    ("散步", "walk", 55),
-    ("大招", "ultra", 20),
-    ("聊天", "chat", -15),
-    ("待机2", "idle2", -50),
-    ("扩展", "manage", -85),
+    ("散步", "walk", 60),
+    ("大招", "ultra", 30),
+    ("聊天", "chat", 0),
+    ("待机2", "idle2", -30),
+    ("创建", "create", -60),
+    ("扩展", "manage", -90),
     ("退出", "quit", -120),
 ]
 
@@ -64,6 +65,7 @@ class DesktopPetApp(App):
         self._proactive_busy = False
         self._font_name = "Roboto"
         self._root: FloatLayout | None = None
+        self._wizard = None
 
         self.input_panel = InputPanel(
             on_submit=self.submit_text,
@@ -267,8 +269,55 @@ class DesktopPetApp(App):
         elif action == "manage":
             self._hide_menu()
             self.input_panel.show_manager()
+        elif action == "create":
+            self._hide_menu()
+            self.open_creator()
         else:
             self.play_animation(action, from_menu=True)
+
+    def open_creator(self) -> None:
+        from .creator.wizard import CreatePetWizard
+
+        self._wizard = CreatePetWizard(
+            config=self.settings,
+            paths=self.paths,
+            on_created=self._on_character_created,
+            font_name=self._font_name,
+        )
+        self._wizard.open()
+
+    def _on_character_created(self, key: str) -> None:
+        try:
+            self.reload_character(key)
+        except Exception as exc:
+            self.show_bubble("切换角色失败：" + str(exc))
+
+    def reload_character(self, key: str) -> None:
+        """Swap the visible pet without restarting the app."""
+        if self.pet is None or self._root is None:
+            return
+        character = load_character(key, self.paths)
+        old = self.pet
+        position = old.pos
+        old.stop()
+        self._root.remove_widget(old)
+
+        pet = PetWidget(
+            character,
+            height=self.settings.ui.pet_height,
+            walk_speed=self.settings.ui.walk_speed,
+            jump_height=self.settings.ui.jump_height,
+        )
+        pet.pos = position
+        self._root.add_widget(pet, index=0)
+        self.pet = pet
+        self.character = character
+        pet.clamp_to_screen()
+
+        self.settings.character = key
+        save_config(self.settings, self.paths)
+        self.hide_bubble()
+        self.show_bubble("我是{}，请多关照～".format(character.name))
 
     def _show_menu(self) -> None:
         if self.pet is None:
