@@ -8,6 +8,9 @@
 
 > 完整的项目介绍、技术方案和可直接使用的 GitHub 文案见
 > [`项目说明.md`](项目说明.md)。
+>
+> 面向使用者的中文 + English 步骤说明见
+> [`使用说明.md`](使用说明.md)。
 
 ![Python](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-lightgrey)
