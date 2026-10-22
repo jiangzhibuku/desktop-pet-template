@@ -50,6 +50,10 @@ def main() -> int:
         _show_error("桌面宠物目前只支持 Windows。")
         return 1
 
+    if "--safe" in sys.argv:
+        os.environ["DESKTOP_PET_SAFE"] = "1"
+        sys.argv.remove("--safe")
+
     _enable_dpi_awareness()
     _prepare_frozen_dlls()
     if site.USER_BASE is None:

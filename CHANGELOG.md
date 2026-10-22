@@ -4,6 +4,15 @@
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循
 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.3] - 2026-10-22
+
+### Added
+
+- **安全模式**：`DesktopPet-safe.bat` / `run_safe.bat` / `python run.py --safe`，使用普通小窗口，不再全屏覆盖，带系统标题栏和关闭按钮。
+- **全局退出快捷键** `Ctrl+Alt+Shift+Q`：黑屏覆盖时仍可强制退出。
+- 启动后 12 秒内显示「退出」按钮，防止无法关闭。
+- 透明窗口初始化失败时自动切换到安全模式。
+
 ## [0.3.2] - 2026-10-22
 
 ### Fixed

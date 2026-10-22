@@ -88,7 +88,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 到 GitHub 的 **Releases** 页面下载：
 
 ```text
-DesktopPet-v0.3.2-win64.zip
+DesktopPet-v0.3.3-win64.zip
 ```
 
 解压后双击 `DesktopPet.exe`，不需要安装 Python。
@@ -456,8 +456,11 @@ python tools/generate_placeholder.py
 **Q：一句话能生成任意角色吗？**
 A：离线绘制只支持有限的物种/颜色/配饰组合。要更自由，用透明 PNG，或开 `--ai-image`。
 
-**Q：便携版在别人电脑上全屏白底 / 桌宠变成白色剪影？**
-A：这是显卡/透明窗口兼容问题。v0.3.2 已默认改用 Kivy `angle_sdl2` 后端并修复色键。旧版可在启动前设置 `KIVY_GL_BACKEND=angle_sdl2` 或 `KIVY_GL_BACKEND=glew` 再运行 exe。
+**Q：便携版在别人电脑上全屏白底 / 黑屏 / 桌宠变成白色剪影？**
+A：这是显卡/透明窗口兼容问题。v0.3.3 已默认改用 Kivy `angle_sdl2` 后端并修复色键。旧版可在启动前设置 `KIVY_GL_BACKEND=angle_sdl2` 或 `KIVY_GL_BACKEND=glew` 再运行 exe。
+
+**Q：黑屏覆盖全屏，任务管理器也被挡住，关不掉？**
+A：按 `Ctrl+Alt+Shift+Q` 强制退出。或运行解压目录里的 `DesktopPet-safe.bat`（安全模式，普通小窗口，带关闭按钮）。源码运行可用 `python run.py --safe`。
 
 **Q：JPG 去背景后还有白边？**
 A：复杂背景/发丝很难完美去除。装 `rembg` 后用 `--cutout rembg`；或先用抠图工具输出透明 PNG，或调低 `--tolerance`。
@@ -487,6 +490,7 @@ A：代码 MIT；Mochi 和离线生成的示例素材 CC0；用户图片/第三�
 | Python 依赖 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
 
 如果这个模板帮到你，欢迎 Star ⭐ 或提交 Issue / PR。
+
 
 
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import queue
 import random
 import threading
@@ -24,7 +25,11 @@ from .input_panel import InputPanel
 from .paths import build_paths
 from .pet import PetWidget
 from .widgets import MenuButton, SpeechBubble, layout_menu
-from .win32_window import setup_desktop_window
+from .win32_window import (
+    position_window,
+    register_emergency_exit,
+    setup_desktop_window,
+)
 
 MENU_ITEMS = [
     ("跳跃", "jump", 90),
@@ -67,6 +72,8 @@ class DesktopPetApp(App):
         self._root: FloatLayout | None = None
         self._wizard = None
         self._whitelist = None
+        self.safe_mode = os.environ.get("DESKTOP_PET_SAFE") == "1"
+        self.panic_button = None
 
         self.input_panel = InputPanel(
             on_submit=self.submit_text,
@@ -82,8 +89,13 @@ class DesktopPetApp(App):
         self._register_font()
         if self.settings.ui.always_on_top:
             Window.always_on_top = True
-        Window.borderless = True
-        Window.clearcolor = (0, 0, 0, 1)
+        if self.safe_mode:
+            Window.borderless = False
+            Window.size = (460, 620)
+            Window.clearcolor = (0.10, 0.08, 0.11, 1)
+        else:
+            Window.borderless = True
+            Window.clearcolor = (0, 0, 0, 1)
         self._set_window_icon()
 
         self._root = FloatLayout(size_hint=(1, 1))
@@ -103,12 +115,49 @@ class DesktopPetApp(App):
             self._root.add_widget(button)
             self.menu_buttons.append(button)
 
+        self.panic_button = Button(
+            text="退出",
+            size_hint=(None, None),
+            size=(56, 28),
+            background_normal="",
+            background_down="",
+            background_color=(0.85, 0.25, 0.31, 0.92),
+            color=(1, 1, 1, 1),
+            font_name=self._font_name,
+            font_size=12,
+        )
+        self.panic_button.bind(on_release=lambda _b: self._emergency_exit())
+        self._root.add_widget(self.panic_button)
+        self._place_panic()
+        Clock.schedule_once(self._hide_panic, 12)
+
         Window.bind(on_touch_down=self._on_touch_down)
         Window.bind(on_touch_move=self._on_touch_move)
         Window.bind(on_touch_up=self._on_touch_up)
         Window.bind(on_keyboard=self._on_keyboard)
         Window.bind(size=self._on_window_resize)
         return self._root
+
+    def _place_panic(self) -> None:
+        if self.panic_button is not None:
+            self.panic_button.pos = (
+                max(0.0, Window.width - 66),
+                max(0.0, Window.height - 38),
+            )
+
+    def _hide_panic(self, _dt=None) -> None:
+        if self.panic_button is not None and self._root is not None:
+            self._root.remove_widget(self.panic_button)
+            self.panic_button = None
+
+    def _emergency_exit(self) -> None:
+        try:
+            self.input_panel.close()
+            self.agent.close()
+        except Exception:
+            pass
+        Clock.schedule_once(lambda _dt: self.stop(), 0)
+        threading.Timer(1.0, lambda: os._exit(0)).start()
 
     def _register_font(self) -> None:
         font = resolve_font(self.settings, self.paths)
@@ -130,7 +179,11 @@ class DesktopPetApp(App):
                 pass
 
     def on_start(self) -> None:
-        setup_desktop_window()
+        register_emergency_exit(self._emergency_exit)
+        if self.safe_mode:
+            position_window(460, 620)
+        elif not setup_desktop_window():
+            self._switch_to_safe_mode()
         self.pet.clamp_to_screen()
         Clock.schedule_interval(self._poll, 1.0 / 20.0)
         Clock.schedule_interval(self._move_step, 1.0 / 60.0)
@@ -541,7 +594,17 @@ class DesktopPetApp(App):
             return True
         return False
 
+    def _switch_to_safe_mode(self) -> None:
+        self.safe_mode = True
+        Window.borderless = False
+        Window.size = (460, 620)
+        Window.clearcolor = (0.10, 0.08, 0.11, 1)
+        position_window(460, 620)
+        if self.pet is not None:
+            self.pet.clamp_to_screen()
+
     def _on_window_resize(self, *_args) -> None:
+        self._place_panic()
         if self.pet is not None:
             self.pet.clamp_to_screen()
 

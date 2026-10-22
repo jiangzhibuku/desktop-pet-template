@@ -54,7 +54,7 @@ jobs:
       - name: Package and checksum
         run: |
           $version = "${{ github.ref_name }}"
-          if ($version -notmatch '^v') { $version = "v0.3.2" }
+          if ($version -notmatch '^v') { $version = "v0.3.3" }
           $zip = "DesktopPet-$version-win64.zip"
           Compress-Archive -Path "dist/DesktopPet/*" -DestinationPath $zip -Force
           Get-FileHash $zip -Algorithm SHA256 |
