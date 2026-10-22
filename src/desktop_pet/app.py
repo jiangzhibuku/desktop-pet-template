@@ -83,7 +83,7 @@ class DesktopPetApp(App):
         if self.settings.ui.always_on_top:
             Window.always_on_top = True
         Window.borderless = True
-        Window.clearcolor = (0, 0, 0, 0)
+        Window.clearcolor = (0, 0, 0, 1)
         self._set_window_icon()
 
         self._root = FloatLayout(size_hint=(1, 1))

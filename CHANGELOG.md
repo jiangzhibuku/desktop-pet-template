@@ -4,6 +4,15 @@
 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号遵循
 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.2] - 2026-10-22
+
+### Fixed
+
+- 部分 Intel 核显/旧显卡上便携版出现全屏白底、桌宠白色剪影的问题。
+- 默认使用 Kivy `angle_sdl2` 渲染后端（可用 `KIVY_GL_BACKEND` 覆盖）。
+- 透明色键背景从透明黑改为不透明黑，避免部分驱动把 alpha 0 合成为白色。
+- PyInstaller 打包补上 `kivy_deps.angle` 运行库。
+
 ## [0.3.1] - 2026-10-19
 
 ### Added

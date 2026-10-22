@@ -1,4 +1,4 @@
-﻿# Desktop Pet Template · 桌宠生成模板
+# Desktop Pet Template · 桌宠生成模板
 
 把你的角色变成桌面宠物：**给一张图，或写一句话**，自动生成 idle / walk / jump / ultra 动画，并套用现有的透明桌宠、粉白气泡和圆形轮盘。
 
@@ -88,7 +88,7 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
 到 GitHub 的 **Releases** 页面下载：
 
 ```text
-DesktopPet-v0.3.1-win64.zip
+DesktopPet-v0.3.2-win64.zip
 ```
 
 解压后双击 `DesktopPet.exe`，不需要安装 Python。
@@ -456,6 +456,9 @@ python tools/generate_placeholder.py
 **Q：一句话能生成任意角色吗？**
 A：离线绘制只支持有限的物种/颜色/配饰组合。要更自由，用透明 PNG，或开 `--ai-image`。
 
+**Q：便携版在别人电脑上全屏白底 / 桌宠变成白色剪影？**
+A：这是显卡/透明窗口兼容问题。v0.3.2 已默认改用 Kivy `angle_sdl2` 后端并修复色键。旧版可在启动前设置 `KIVY_GL_BACKEND=angle_sdl2` 或 `KIVY_GL_BACKEND=glew` 再运行 exe。
+
 **Q：JPG 去背景后还有白边？**
 A：复杂背景/发丝很难完美去除。装 `rembg` 后用 `--cutout rembg`；或先用抠图工具输出透明 PNG，或调低 `--tolerance`。
 
@@ -484,5 +487,6 @@ A：代码 MIT；Mochi 和离线生成的示例素材 CC0；用户图片/第三�
 | Python 依赖 | [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) |
 
 如果这个模板帮到你，欢迎 Star ⭐ 或提交 Issue / PR。
+
 
 

@@ -125,8 +125,8 @@ git push -u origin main
 5. 创建 GitHub Release 并上传
 
 ```powershell
-git tag v0.3.1
-git push origin v0.3.1
+git tag v0.3.2
+git push origin v0.3.2
 ```
 
 也可以在 GitHub → Actions → Release → Run workflow 手动构建。
@@ -136,12 +136,12 @@ git push origin v0.3.1
 ```powershell
 pip install pyinstaller
 pyinstaller packaging/desktop_pet.spec
-Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.1-win64.zip
+Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.2-win64.zip
 ```
 
 在 GitHub → Releases → Draft a new release：
 
-- Tag：`v0.3.1`
+- Tag：`v0.3.2`
 - 附上 zip；
 - Release notes 里写明：**不含第三方角色素材；自带占位角色为 CC0**；
 - 提醒用户首次运行需要在 `%APPDATA%\DesktopPet\config.json` 填 API Key。
@@ -159,6 +159,7 @@ Compress-Archive -Path dist\DesktopPet\* -DestinationPath DesktopPet-v0.3.1-win6
 2. 用 `git filter-repo` 或 BFG 清理历史；
 3. 强制推送后，联系 GitHub Support 清理缓存；
 4. 公开仓库的 fork 无法收回，所以**预防比补救重要**。
+
 
 
 

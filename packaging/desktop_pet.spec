@@ -1,4 +1,4 @@
-# -*- mode: python ; coding: utf-8 -*-
+﻿# -*- mode: python ; coding: utf-8 -*-
 """PyInstaller spec for a one-folder Windows build.
 
 Build from the repository root:
@@ -13,7 +13,7 @@ and the font folder (no font is shipped).  Keep third-party character packs in
 
 from pathlib import Path
 
-from kivy_deps import glew, sdl2
+from kivy_deps import angle, glew, sdl2
 from PyInstaller.building.datastruct import Tree
 
 ROOT = Path(SPECPATH).resolve().parent
@@ -31,6 +31,7 @@ a = Analysis(
         "kivy.uix.label",
         "kivy.uix.button",
         "kivy.uix.floatlayout",
+        "kivy_deps.angle",
         "tkinter",
     ],
     hookspath=[],
@@ -67,9 +68,11 @@ coll = COLLECT(
     exe,
     a.binaries,
     a.datas,
-    *[Tree(path) for path in (sdl2.dep_bins + glew.dep_bins)],
+    *[Tree(path) for path in (angle.dep_bins + sdl2.dep_bins + glew.dep_bins)],
     strip=False,
     upx=False,
     upx_exclude=[],
     name="DesktopPet",
 )
+
+
